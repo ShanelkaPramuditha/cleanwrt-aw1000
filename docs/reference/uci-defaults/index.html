@@ -1872,6 +1872,8 @@
       
         
       
+        
+      
     
     
     
@@ -1960,6 +1962,34 @@
     
   
     Repositories
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fork-maintenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maintaining this fork
   
 
     
@@ -2347,6 +2377,11 @@ rows.</p>
 <td><code>52-cw-upgrade-check</code></td>
 <td>writes <code>attendedsysupgrade.client.login_check_for_upgrades='1'</code>, the answer to LuCI's firmware-check question, and <strong>only where the option is absent</strong>. LuCI asks that question on every load of <em>Status → Overview</em> until the option exists, and the page it names for a later change is the one <code>48-cw-strip-asu-ui</code> removes. See <a href="../../releases/#the-new-version-notice">releases</a></td>
 <td>the number is part of the fix: the package's own <code>50-attendedsysupgrade</code> creates that config file, without the option, and uci-defaults run in name order — anything numbered below 50 is written into a file that does not exist yet and is then overwritten. A router whose owner answered the question keeps that answer, because the option is already there</td>
+</tr>
+<tr>
+<td><code>95-cw-drop-removed-apps</code></td>
+<td>after a keep-settings upgrade from an image that carried them: deletes <code>/etc/config/{passwall,passwall2,homeproxy,adguardhome,adblock}</code>, AdGuard Home's <code>/etc/adguardhome.yaml</code> and <code>/etc/adguardhome</code>, and the <code>passwall*</code> firewall include sections</td>
+<td>each app only when its init script is absent, so reinstalling one keeps its settings. Nothing to do on a router that never had them</td>
 </tr>
 <tr>
 <td><code>96-cw-apk-world-pin</code></td>
