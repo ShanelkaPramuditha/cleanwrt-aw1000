@@ -45,12 +45,21 @@ The inputs of a manual run:
 | `clean` | off | rebuild every package |
 | `opt_artifacts` | off | also compile and verify the optional `cw-opt` feed |
 | `artifacts` | off | upload the images as a workflow artifact (public for a public repository) |
+| `release` | `none` | create a GitHub release `v<CW_VERSION>` on the built commit: `draft` (private until you publish it), `prerelease`, or `release` (published and marked latest). An `-rc` label is never marked latest |
 
 A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.
 
 A tag `v<version>` is built by the same workflow, and its images go straight into a **draft**
 release: nothing is public and the site is not touched until that draft is published by hand.
+
+A manual run with `release` set does the same without pushing a tag first: the workflow creates the
+tag `v<CW_VERSION>` on the commit it built and uploads the images, the checksums and the provenance
+bundle to the release. The version is always `CW_VERSION` from `tools/cw-release-build.sh`, so bump
+it before a new release. The run stops before uploading anything when the tag already exists on
+another commit, or when that release is already published: a published release is never rewritten.
+Running again with a draft still open refreshes the draft, and publishes it if you chose
+`prerelease` or `release`.
 
 ## Locally
 

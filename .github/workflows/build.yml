@@ -15,6 +15,15 @@ on:
         description: "Upload the images as a workflow artifact (public repository: anyone signed in to GitHub can download it)"
         type: boolean
         default: false
+      release:
+        description: "Create a GitHub release v<CW_VERSION> on the built commit (draft = private until published by hand)"
+        type: choice
+        options:
+          - none
+          - draft
+          - prerelease
+          - release
+        default: none
   push:
     tags: ["v*"]
 
@@ -32,9 +41,9 @@ jobs:
   image:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
-    # The tag run uploads the images straight into a draft release from here: a
-    # workflow artifact is downloadable by anyone signed in, which would bypass
-    # the draft gate. Workflow-dispatch runs stay read-only in effect.
+    # A tag run, or a manual run with `release` set, uploads the images straight into a
+    # release from here: a workflow artifact is downloadable by anyone signed in, which
+    # would bypass the draft gate. A manual run with `release: none` stays read-only in effect.
     permissions:
       contents: write
     outputs:
@@ -232,16 +241,37 @@ jobs:
             /cleanwrt/tools/cw-publish-feed.sh /build --out /cleanwrt/feed-out
           tar -C feed-out -czf dist/cw-opt-feed.tar.gz .
 
-      - name: Draft release
-        if: success() && startsWith(github.ref, 'refs/tags/v')
+      # A pushed tag always makes a draft. A manual run makes what `release` asks for:
+      # draft (private until published by hand), prerelease, or release (marked latest).
+      # The tag v<CW_VERSION> is created on the built commit when it does not exist yet; a tag
+      # made with the workflow token starts no second run.
+      - name: Release
+        if: success() && (startsWith(github.ref, 'refs/tags/v') || (inputs.release != '' && inputs.release != 'none'))
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.ver.outputs.version }}
+          MODE: ${{ startsWith(github.ref, 'refs/tags/v') && 'draft' || inputs.release }}
         run: |
           set -eu
           tag="v$VERSION"
-          pre=""
-          case "$VERSION" in *-rc*) pre="--prerelease" ;; esac
+          # an -rc label is never offered as the latest stable release
+          rc=0
+          case "$VERSION" in *-rc*) rc=1 ;; esac
+          case "$MODE:$rc" in
+            draft:0)              flags="--draft" ;;
+            draft:1)              flags="--draft --prerelease" ;;
+            prerelease:*|release:1) flags="--prerelease" ;;
+            release:0)            flags="--latest" ;;
+            *) echo "ERROR: unknown release mode '$MODE'" >&2; exit 1 ;;
+          esac
+          # A tag that already exists must name the commit just built: a release whose
+          # images came from another commit would carry the wrong provenance. The peeled
+          # line (^{}) is the commit of an annotated tag; a lightweight tag has only the first.
+          at=$(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{c=$1} END{print c}')
+          if [ -n "$at" ] && [ "$at" != "$GITHUB_SHA" ]; then
+            echo "ERROR: tag $tag exists at $at, not at the built commit $GITHUB_SHA; bump CW_VERSION or delete the tag" >&2
+            exit 1
+          fi
           cat > notes.md <<NOTES
           CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt ${{ steps.ver.outputs.tag }}, qualcommax/ipq807x).
 
@@ -257,9 +287,14 @@ jobs:
               { echo "ERROR: $tag is published already; a tag build never rewrites it" >&2; exit 1; }
             gh release upload "$tag" dist/* --clobber
             gh release edit "$tag" --notes-file notes.md
+            # a manual run that asks for more than a draft publishes the refreshed draft
+            # shellcheck disable=SC2086
+            [ "$MODE" = draft ] || gh release edit "$tag" --draft=false $flags
           else
-            gh release create "$tag" dist/* --draft --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md $pre
+            # shellcheck disable=SC2086
+            gh release create "$tag" dist/* $flags --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md
           fi
+          echo "release $tag: $MODE ($(gh release view "$tag" --json url -q .url))"
 
       - name: Upload build files
         if: success() && inputs.artifacts
