@@ -5,8 +5,16 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 
 # Changelog
 
-## Unreleased (this fork)
+## 25.12.5-R2.2-SP1 (this fork, not yet released)
 
+- **Upgrading from upstream with keep-settings.** The first boot deletes the leftover
+  configuration of Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock, and Passwall's
+  firewall includes, when those apps are not installed.
+- **The fork's own signing key.** The image trusts this fork's package-signing key instead of
+  upstream's.
+- **Version label.** Fork builds are labelled `-SP<n>` after the upstream release they are based
+  on, and the newer-version notice now compares the whole label. The stock comparison read only
+  the OpenWrt base and `rc`, so `R2.1` and `R2.2` counted as the same version.
 - **Nikki, with a dashboard.** Nikki runs the mihomo (Clash Meta) core from your own Clash YAML
   profile or subscription, under *Services → Nikki*. The Zashboard dashboard is preinstalled
   (about 1.5 MiB), so **Open Dashboard** works offline: switch proxies, test latency, watch
@@ -15,9 +23,7 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   password with random 32-character ones.
 - **Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock are gone.** Their feeds, packages,
   cores (xray-core, sing-box, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others)
-  and first-boot files are no longer in the image; Nikki is the proxy app. A keep-settings upgrade
-  leaves the old configuration files in `/etc/config` with nothing reading them; a clean install
-  (`sysupgrade -n`) removes them.
+  and first-boot files are no longer in the image; Nikki is the proxy app.
 - **This fork's own links.** The router's newer-version notice now reads this fork's version list,
   so it never offers an upstream image (which would bring back the removed apps and drop Nikki).
   The os-release home and bug links, releases and issues point at this fork too.

@@ -1,0 +1,49 @@
+#!/bin/sh
+# Clean up after apps this fork no longer ships: Passwall, Passwall 2, HomeProxy,
+# AdGuard Home and Adblock.
+#
+# A keep-settings sysupgrade from an image that carried them keeps their files in
+# /etc/config, and the firewall keeps the include sections Passwall wrote for itself.
+# Those includes point at scripts that no longer exist, so every firewall reload logs
+# an error. Each app is handled only when its init script is absent, which means the
+# app is not installed. Someone who installs one of them again keeps its settings.
+# A router that never had them finds nothing to do. Runs once.
+
+changed_fw=0
+
+drop_app() { # <init script name> <uci config> [<extra file or dir> ...]
+	app=$1; cfg=$2; shift 2
+	[ -x "/etc/init.d/$app" ] && return 0
+	if [ -f "/etc/config/$cfg" ]; then
+		rm -f "/etc/config/$cfg"
+		logger -t cw-firstboot "removed /etc/config/$cfg ($app is not in this image)"
+	fi
+	for extra in "$@"; do
+		[ -e "$extra" ] || continue
+		rm -rf "$extra"
+		logger -t cw-firstboot "removed $extra ($app is not in this image)"
+	done
+}
+
+drop_fw_include() { # <init script name> <firewall section> ...
+	app=$1; shift
+	[ -x "/etc/init.d/$app" ] && return 0
+	for sec in "$@"; do
+		[ "$(uci -q get "firewall.$sec")" = "include" ] || continue
+		uci -q delete "firewall.$sec"
+		changed_fw=1
+		logger -t cw-firstboot "removed firewall include $sec ($app is not in this image)"
+	done
+}
+
+drop_app passwall    passwall
+drop_app passwall2   passwall2
+drop_app homeproxy   homeproxy
+drop_app adguardhome adguardhome /etc/adguardhome.yaml /etc/adguardhome
+drop_app adblock     adblock
+
+drop_fw_include passwall  passwall passwall_server
+drop_fw_include passwall2 passwall2 passwall2_server
+
+[ "$changed_fw" = 1 ] && uci commit firewall
+exit 0

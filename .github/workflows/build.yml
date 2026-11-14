@@ -85,6 +85,38 @@ jobs:
             cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-
             cw-${{ steps.ver.outputs.tag }}-
 
+      # Host tools and the cross toolchain: about an hour of every cold run (gcc twice, cmake,
+      # binutils, ...), and they change only with the OpenWrt tag, the builder image or the
+      # toolchain options. The key is built from exactly those, so a package change in the seed
+      # keeps the cache. Exact match only - no fallback - because a toolchain built with other
+      # options is not this toolchain.
+      - name: Toolchain cache key
+        id: tckey
+        run: |
+          opts=$( { grep -E '^(# )?CONFIG_(TOOLCHAINOPTS|GDB|GCC_|BINUTILS_|LIBC_|DEVEL|CCACHE|TARGET_)' configs/arcadyan_aw1000.seed; cat docker/Dockerfile; } | sha256sum | cut -c1-16)
+          echo "key=cw-tc-${{ steps.ver.outputs.tag }}-$opts" >> "$GITHUB_OUTPUT"
+
+      - name: Restore toolchain cache
+        id: tc
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /mnt/cw/openwrt/staging_dir/host
+            /mnt/cw/openwrt/staging_dir/toolchain-*
+          key: ${{ steps.tckey.outputs.key }}
+
+      # The tree was cloned a minute ago, so every source file is newer than the restored
+      # "built" stamps and OpenWrt would rebuild every tool anyway. Touching the stamps after
+      # the clone tells it the restored tools are current (the cachewrtbuild method).
+      - name: Mark the restored toolchain current
+        if: steps.tc.outputs.cache-hit == 'true'
+        run: |
+          cd /mnt/cw/openwrt
+          find staging_dir/host staging_dir/toolchain-* -type d -name stamp | while read -r d; do
+            find "$d" -type f -exec touch {} +
+          done
+          echo "toolchain restored: $(du -sh staging_dir/host staging_dir/toolchain-* | tr '\n' ' ')"
+
       - name: Signing keys (optional repository secrets)
         env:
           APK_PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
@@ -142,6 +174,21 @@ jobs:
             /mnt/cw/openwrt/dl
             /mnt/cw/openwrt/.ccache
           key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
+
+      - name: Save toolchain cache
+        if: success() && steps.tc.outputs.cache-hit != 'true'
+        run: |
+          # the build ran as root in the container; the cache action runs as the runner user
+          sudo chown -R "$USER" /mnt/cw/openwrt/staging_dir/host /mnt/cw/openwrt/staging_dir/toolchain-*
+
+      - name: Upload toolchain cache
+        if: success() && steps.tc.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /mnt/cw/openwrt/staging_dir/host
+            /mnt/cw/openwrt/staging_dir/toolchain-*
+          key: ${{ steps.tckey.outputs.key }}
 
       - name: Collect release files
         if: success()

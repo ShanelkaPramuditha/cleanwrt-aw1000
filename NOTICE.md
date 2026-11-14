@@ -32,6 +32,11 @@ upstream's, unchanged.
 | 2026-11-14 | `configs/arcadyan_aw1000.seed`, `configs/local-packages.pin` | modified: HomeProxy, `sing-box` and `ucode-mod-digest` deselected; the HomeProxy pin removed |
 | 2026-11-14 | `configs/arcadyan_aw1000.seed` | modified: `kmod-ipt-tproxy`, `ipset`, `ip6tables-nft`, `kmod-ip6tables` and `wget` deselected |
 | 2026-11-14 | `configs/arcadyan_aw1000.seed`, `tools/`, `files/etc/`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch`, `mkdocs.yml`, `.github/ISSUE_TEMPLATE/`, `docs/`, `feeds.conf.default`, `feeds-src/cwfeed/README.md` | modified: project URLs point at this fork (os-release, upgrade notice and version feed, site, releases, issues, cw-opt feed); `tools/cw-gh-pages.sh` commits as the GitHub Actions bot instead of upstream's maintainer |
+| 2026-11-14 | `tools/cw-release-build.sh`, `configs/arcadyan_aw1000.seed`, `tools/docs-hooks.py`, `.github/ISSUE_TEMPLATE/` | modified: version label `25.12.5-R2.2-SP1` |
+| 2026-11-14 | `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch` | modified: the upgrade notice compares every number of the version label |
+| 2026-11-14 | `files/etc/apk/keys/public-key.pem` | replaced: this fork's apk feed key |
+| 2026-11-14 | `files/etc/uci-defaults/95-cw-drop-removed-apps`, `docs/fork-maintenance.md` | added: cleanup of removed apps' configs; fork maintenance page |
+| 2026-11-14 | `.github/workflows/build.yml`, `mkdocs.yml`, `docs/` | modified: toolchain cache in CI; navigation and docs for the above |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)

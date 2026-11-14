@@ -16,7 +16,43 @@
  		]),
  		E('div', { class: 'btn', click: () => setSetUpgradeCheck(false) }, _('Stop showing upgrade alerts')),
  	], 60000, 'notice');
-@@ -96,7 +94,7 @@
+@@ -72,21 +70,23 @@
+ 	if (! installed) return false;
+ 	if (installed.includes('SNAPSHOT')) return false;
+ 
+-	// At this point we know the versions are in one of two forms:
+-	//    MM.mm.rr
+-	//    MM.mm.rr-rcN
+-	// so partition them up into a 4-element array, with a value of
+-	// 99 for the "release candidate" part of any release.
+-	const parse = (v) => [
+-		...v.split('-')[0].split('.').map(Number),
+-		Number(v.split(/rc/)[1] || 99)
+-	];
++	// CleanWRT versions: MM.mm.rr, then a stage: -rcN (candidate) sorts below every
++	// release; anything else (-R2.2, -R2.2-SP1, ...) is a release whose numbers are
++	// compared in order, a missing number counting as 0. The stock parser read only
++	// MM.mm.rr and "rc", so two releases on one OpenWrt base compared equal and the
++	// notice never fired.
++	const parse = (v) => {
++		const base = v.split('-')[0].split('.').map(Number);
++		const rest = v.slice(v.split('-')[0].length);
++		const stage = /rc/i.test(rest) ? 0 : 1;
++		return [ ...base, stage, ...(rest.match(/\d+/g) || []).map(Number) ];
++	};
+ 
+ 	const [aParts, iParts] = [parse(available), parse(installed)];
+ 
+-	for (let i = 0; i < iParts.length; i++) {
+-		const aVal = aParts[i];
+-		const iVal = iParts[i];
++	for (let i = 0; i < Math.max(aParts.length, iParts.length); i++) {
++		const aVal = aParts[i] || 0;
++		const iVal = iParts[i] || 0;
+ 		if (aVal > iVal) return true;
+ 		if (aVal < iVal) return false;
+ 	}
+@@ -96,7 +96,7 @@
  
  async function checkDeviceAvailable(boardinfo, new_version)
  {
@@ -25,7 +61,7 @@
  	return fetch(profile_url)
  		.then(response => response.json())
  		.then(data => {
-@@ -139,7 +137,7 @@
+@@ -139,7 +139,7 @@
  		const check_upgrades = uci.get_bool(...check_setting);
  
  		if (check_upgrades) {

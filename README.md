@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
-  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.2-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.2--SP1-14b8a6?style=for-the-badge"></a>
   <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/ShanelkaPramuditha/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
   <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/ShanelkaPramuditha/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
 </p>
@@ -184,6 +184,11 @@ package feed.
 | HomeProxy removed (its pin, sing-box and ucode-mod-digest): Nikki is the one proxy app | `configs/arcadyan_aw1000.seed`, `configs/local-packages.pin`, `tools/cw-release-build.sh`, `docs/` |
 | Leftover iptables-era packages removed (`kmod-ipt-tproxy`, `ipset`, `ip6tables-nft`, `kmod-ip6tables`) and the duplicate `wget` line (the build already uses `uclient-fetch`) | `configs/arcadyan_aw1000.seed` |
 | The fork's own links: os-release home and bug URLs, the newer-version notice and its version feed, the docs site, releases, issues, badges and the optional cw-opt feed point at this fork; site commits use the GitHub Actions bot identity | `configs/`, `tools/`, `files/`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch`, `mkdocs.yml`, `.github/ISSUE_TEMPLATE/`, `docs/`, `feeds*` |
+| Version label `-SP<n>` (first: `25.12.5-R2.2-SP1`), and the upgrade notice compares the whole label | `tools/cw-release-build.sh`, `configs/arcadyan_aw1000.seed`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch` |
+| The fork's own apk feed signing key (the image trusts it instead of upstream's) | `files/etc/apk/keys/public-key.pem` |
+| Leftover configs of the removed apps cleaned up on a keep-settings upgrade | `files/etc/uci-defaults/95-cw-drop-removed-apps` |
+| CI caches the host tools and cross toolchain between runs | `.github/workflows/build.yml` |
+| A page for maintaining the fork | `docs/fork-maintenance.md`, `mkdocs.yml` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
 they fit.

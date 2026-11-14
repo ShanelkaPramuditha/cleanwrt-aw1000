@@ -116,6 +116,7 @@ nav:
   - Building:
       - Build from source: building.md
       - Repositories: repositories.md
+      - Maintaining this fork: fork-maintenance.md
   - Help:
       - FAQ and troubleshooting: faq.md
       - Contributing: contributing.md
