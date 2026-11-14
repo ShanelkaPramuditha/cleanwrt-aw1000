@@ -192,13 +192,12 @@ CONFIG_PACKAGE_uhttpd=y
 # ── LuCI apps (official feeds) ───────────────────────────────────────────────
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_ttyd=y
-# Attended sysupgrade: ASU client + LuCI page (System -> Attended
-# Sysupgrade). Deps from the pinned feeds: attendedsysupgrade-common (packages
-# feed) + cgi-io + luci-base (in-image). NOTE: it requests a CUSTOM image from
-# an ASU server (uci sysupgrade.client.url); the default public server only
-# knows official OpenWrt builds - a CleanWRT ASU server is a future item; safe
-# to keep configured-but-unused until then (no background op touches the
-# device).
+# Attended sysupgrade: carried for its Status-page upgrade check only. The package's
+# build-on-request pages (System -> Attended Sysupgrade) are removed on first boot by
+# files/etc/uci-defaults/48-cw-strip-asu-ui, because no ASU server can build a
+# CleanWRT image. The check it keeps (11_upgrades.js) is pointed at this project's
+# version list by patches/feeds/luci/0007, and the "stop showing upgrade alerts"
+# preference lives in attendedsysupgrade-common's config (52-cw-upgrade-check).
 CONFIG_PACKAGE_luci-app-attendedsysupgrade=y
 CONFIG_PACKAGE_luci-app-sqm=y
 CONFIG_PACKAGE_sqm-scripts=y
@@ -334,11 +333,8 @@ CONFIG_PACKAGE_luci-app-qmodem-sms=y
 #     binds (/var/run/awvoice-phoned/media.sock). A fresh router therefore opens the port
 #     and stays silent until the AWvoice page's SIP card points the audio link at that
 #     socket; credentials and network settings are the owner's, not the firmware's.
-#     What this block cannot state as satisfied: the switch lives in the AWvoice page,
-#     and configs/local-packages.pin still pins AWvoice at the release with no SIP page
-#     at all, so a build made today carries the service with nothing on screen to move
-#     it. The pin decides that, not this seed; once it names a published AWvoice commit
-#     whose page carries the switch, the image is the phone feature as described.
+#     The switch is on the AWvoice page's SIP tab, which the AWvoice commit pinned in
+#     configs/local-packages.pin carries, so the image is the phone feature as described.
 CONFIG_PACKAGE_qmodem-sipd=y
 
 # ── System utilities ─────────────────────────────────────────────────────────

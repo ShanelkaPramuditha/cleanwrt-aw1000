@@ -77,6 +77,25 @@ if ! git -C "$TREE" describe --tags --exact-match 2>/dev/null | grep -qx "$OPENW
     fi
 fi
 
+# 0a. The tree's own sources are all there. `git describe` above passes on a tree whose
+#     files were deleted from the working copy; such a tree fails hours later, at the
+#     target/linux stage. A deleted tracked file is never an expected build edit (the
+#     edits this script makes are modifications), so any one of them stops the build now.
+[ -f "$TREE/target/linux/qualcommax/Makefile" ] || {
+    echo "ERROR: $TREE/target/linux/qualcommax is missing - the board support of this image." >&2
+    echo "       Restore it: git -C $TREE checkout HEAD -- target" >&2
+    exit 1
+}
+if git -C "$TREE" rev-parse --git-dir >/dev/null 2>&1; then
+    deleted=$(git -C "$TREE" ls-files --deleted -- target include scripts toolchain tools package config rules.mk Makefile Config.in)
+    if [ -n "$deleted" ]; then
+        echo "ERROR: $(printf '%s\n' "$deleted" | wc -l) tracked file(s) of the OpenWrt tree are deleted from $TREE, e.g.:" >&2
+        printf '%s\n' "$deleted" | head -5 | sed 's/^/         /' >&2
+        echo "       Restore them: git -C $TREE checkout HEAD -- <path>   (or the whole tree: git -C $TREE checkout HEAD -- .)" >&2
+        exit 1
+    fi
+fi
+
 # 1. Clean for a from-scratch build (optional).
 #    OpenWrt's `clean`/`dirclean` targets depend on .config, and with no .config
 #    make falls back to an interactive menuconfig, which dies in CI with "Error
@@ -440,13 +459,10 @@ cfg_enable 'CONFIG_PACKAGE_kmod-qmi_wwan_s=y'
 # defconfig re-enables default-y symbols (e.g. ruby's RUBY_ENABLE_YJIT, which
 # drags the rust host toolchain into any closure that pulls ruby).
 disable_broken_toggles() {
+# (The shadowsocksr-libev, simple-obfs, shadowsocks-rust and shadow-tls entries left with
+# the Passwall feeds: no pinned feed defines those packages any more.)
 for s in \
-    RUBY_ENABLE_YJIT \
-    PACKAGE_shadowsocksr-libev-ssr-local \
-    PACKAGE_shadowsocksr-libev-ssr-redir \
-    PACKAGE_simple-obfs-client \
-    PACKAGE_shadowsocks-rust-sslocal \
-    PACKAGE_shadow-tls ; do
+    RUBY_ENABLE_YJIT ; do
     sed -i "s|^CONFIG_${s}=y|# CONFIG_${s} is not set|" .config
 done
 }
@@ -574,10 +590,10 @@ if [ "$rc" -ne 0 ]; then
     fi
 fi
 
-# 6b. Opt-in artifacts for the cw-opt binary feed: qBittorrent is
-#     NOT in the image (Qt6 stack), but the RC build compiles it anyway so
-#     bin/packages/aarch64_cortex-a53/ becomes a ready-to-publish signed apk
-#     repository. Publishing that directory (tools/cw-publish-feed.sh) must happen
+# 6b. Opt-in artifacts for the cw-opt binary feed: qBittorrent is part of the
+#     image (the seed selects it), and this pass compiles it again together with
+#     its dependency closure so bin/packages/aarch64_cortex-a53/ becomes a
+#     ready-to-publish signed apk repository that routers can upgrade it from. Publishing that directory (tools/cw-publish-feed.sh) must happen
 #     before an image carrying cw-opt.list is flashed anywhere: a dead feed entry
 #     breaks apk update. The first build compiles qt6base: budget +1-2 h.
 if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then

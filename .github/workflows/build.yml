@@ -61,6 +61,31 @@ jobs:
           case "$GITHUB_REF" in
             refs/tags/v*) [ "${GITHUB_REF#refs/tags/v}" = "$ver" ] || { echo "tag does not match CW_VERSION $ver"; exit 1; } ;;
           esac
+          # what this run publishes: a pushed tag always makes a draft; a manual run says so itself
+          case "$GITHUB_REF" in
+            refs/tags/v*) mode=draft ;;
+            *) mode="${{ inputs.release }}"; [ -n "$mode" ] || mode=none ;;
+          esac
+          echo "release=$mode" >> "$GITHUB_OUTPUT"
+          echo "release mode: $mode"
+
+      # A release is checked before the two-hour build, not after it: it needs the signing
+      # keys (an unsigned image fails the router's signature check on sysupgrade, and a
+      # throw-away apk key signs a feed no router trusts) and a changelog section for its notes.
+      - name: Release checks
+        if: steps.ver.outputs.release != 'none'
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          HAVE_APK: ${{ secrets.APK_PRIVATE_KEY != '' }}
+          HAVE_USIGN: ${{ secrets.USIGN_KEY_BUILD != '' && secrets.USIGN_KEY_BUILD_PUB != '' }}
+        run: |
+          set -eu
+          bad=0
+          [ "$HAVE_USIGN" = true ] || { echo "::error::a release needs the USIGN_KEY_BUILD and USIGN_KEY_BUILD_PUB secrets (image signing)"; bad=1; }
+          [ "$HAVE_APK" = true ] || { echo "::error::a release needs the APK_PRIVATE_KEY secret (the package key routers trust)"; bad=1; }
+          awk -v v="$VERSION" 'index($0, "## " v) == 1 && (length($0) == length(v) + 3 || substr($0, length(v) + 4, 1) == " ") { f = 1 } END { exit !f }' docs/changelog.md ||
+            { echo "::error::docs/changelog.md has no '## $VERSION' section for the release notes"; bad=1; }
+          exit "$bad"
 
       - name: Free disk space
         run: |
@@ -160,7 +185,7 @@ jobs:
         env:
           CW_CCACHE: "1"
           CW_BUILD_OPT_ARTIFACTS: ${{ inputs.opt_artifacts && '1' || '0' }}
-          CW_REQUIRE_RELEASE_KEYS: ${{ (inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') && '1' || '0' }}
+          CW_REQUIRE_RELEASE_KEYS: ${{ ((inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') || steps.ver.outputs.release != 'none') && '1' || '0' }}
         run: |
           set -o pipefail
           flag=""
@@ -246,11 +271,11 @@ jobs:
       # The tag v<CW_VERSION> is created on the built commit when it does not exist yet; a tag
       # made with the workflow token starts no second run.
       - name: Release
-        if: success() && (startsWith(github.ref, 'refs/tags/v') || (inputs.release != '' && inputs.release != 'none'))
+        if: success() && steps.ver.outputs.release != 'none'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.ver.outputs.version }}
-          MODE: ${{ startsWith(github.ref, 'refs/tags/v') && 'draft' || inputs.release }}
+          MODE: ${{ steps.ver.outputs.release }}
         run: |
           set -eu
           tag="v$VERSION"
@@ -272,14 +297,36 @@ jobs:
             echo "ERROR: tag $tag exists at $at, not at the built commit $GITHUB_SHA; bump CW_VERSION or delete the tag" >&2
             exit 1
           fi
-          cat > notes.md <<NOTES
-          CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt ${{ steps.ver.outputs.tag }}, qualcommax/ipq807x).
-
-          Flash the \`*-squashfs-sysupgrade.bin\` with sysupgrade, see the README for the
-          required expanded MTD layout. \`sha256sums.cw\` lists the checksums of the images and
-          the provenance bundle; \`provenance.tar.gz\` holds the full config, the pinned feeds and
-          the package manifest of this build. Built from commit $GITHUB_SHA.
-          NOTES
+          # The sysupgrade image must carry a signature: the router's own check
+          # (/lib/upgrade/fwtool.sh) runs this same fwtool call and refuses an image without one.
+          # fwtool is the tree's host build, run in the builder image it was compiled in.
+          for img in dist/*-squashfs-sysupgrade.bin; do
+            docker run --rm -v /mnt/cw/openwrt:/build:ro -v "$PWD/dist":/dist:ro cleanwrt-builder \
+              sh -c 'sig=$(mktemp) && /build/staging_dir/host/bin/fwtool -q -s "$sig" "/dist/$1" && [ -s "$sig" ]' _ "$(basename "$img")" ||
+              { echo "ERROR: $img carries no signature - check the USIGN_KEY_BUILD secrets" >&2; exit 1; }
+            echo "signed: $img"
+          done
+          # What changed: the docs/changelog.md section of this version, minus its heading.
+          # Links between doc pages are relative there; on the release page they point at the site.
+          site="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs"
+          awk -v v="$VERSION" '
+            $0 ~ "^## " { if (on) exit; if (index($0, "## " v) == 1 && (length($0) == length(v) + 3 || substr($0, length(v) + 4, 1) == " ")) { on = 1; next } }
+            on' docs/changelog.md |
+            sed -E "s#\]\(([a-z0-9/_-]+)\.md(\#[^)]*)?\)#](${site}/\1/\2)#g" > changes.md
+          [ -s changes.md ] || { echo "ERROR: docs/changelog.md has no section for $VERSION" >&2; exit 1; }
+          {
+            echo "CleanWRT $VERSION for the Arcadyan AW1000 (OpenWrt ${{ steps.ver.outputs.tag }}, qualcommax/ipq807x)."
+            echo
+            echo "## What's new"
+            cat changes.md
+            echo
+            echo "## Files"
+            echo
+            echo "Flash the \`*-squashfs-sysupgrade.bin\` with sysupgrade; read [the flash layout page](${site}/mtd-layout/)"
+            echo "first, the image needs the expanded MTD layout. \`sha256sums.cw\` lists the checksums of the images and"
+            echo "the provenance bundle; \`provenance.tar.gz\` holds the full config, the pinned feeds and"
+            echo "the package manifest of this build. Built from commit $GITHUB_SHA."
+          } > notes.md
           if gh release view "$tag" >/dev/null 2>&1; then
             # a re-run refreshes the draft; a published release stays as it was
             # published (the site and the LuCI check point at those bytes)

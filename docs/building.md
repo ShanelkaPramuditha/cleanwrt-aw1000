@@ -61,6 +61,19 @@ another commit, or when that release is already published: a published release i
 Running again with a draft still open refreshes the draft, and publishes it if you chose
 `prerelease` or `release`.
 
+Every release run, a pushed tag included, is checked before the build starts and again before
+anything is uploaded:
+
+| Check | When | Why |
+|---|---|---|
+| the `USIGN_KEY_BUILD`, `USIGN_KEY_BUILD_PUB` and `APK_PRIVATE_KEY` secrets are set | before the build | an unsigned image is refused by the router's signature check, and a throw-away package key signs packages no router trusts |
+| `docs/changelog.md` has a `## <CW_VERSION>` section | before the build | that section becomes the release notes |
+| the package key is the one routers trust (`tools/cw-check-release-keys.sh`) | inside the build | the same check `opt_artifacts` runs |
+| the sysupgrade image carries a signature | before the upload | the same `fwtool` check the router runs before it flashes |
+
+The release notes are the changelog section under **What's new**, followed by a short **Files**
+paragraph. Links between doc pages in that section become links to the documentation site.
+
 ## Locally
 
 You need a Linux machine (or a Linux VM) and Docker.
