@@ -88,6 +88,9 @@ jobs:
           rsync -a --delete built/ ../site/docs/
           touch ../site/.nojekyll
           if [ -d site-root ]; then cp -f site-root/* ../site/; fi
+          # Upstream's Google Search Console token: it would let upstream's Google account claim
+          # this fork's site, so it is removed from the published branch as well.
+          rm -f ../site/googlebcb1cf5d06c7bf33.html
           [ -f ../site/index.html ] || cat > ../site/index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">

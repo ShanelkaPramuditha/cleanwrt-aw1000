@@ -37,6 +37,7 @@ upstream's, unchanged.
 | 2026-11-14 | `files/etc/apk/keys/public-key.pem` | replaced: this fork's apk feed key |
 | 2026-11-14 | `files/etc/uci-defaults/95-cw-drop-removed-apps`, `docs/fork-maintenance.md` | added: cleanup of removed apps' configs; fork maintenance page |
 | 2026-11-14 | `.github/workflows/build.yml`, `mkdocs.yml`, `docs/` | modified: toolchain cache in CI; navigation and docs for the above |
+| 2026-11-14 | `site-root/googlebcb1cf5d06c7bf33.html`, `.github/workflows/docs.yml` | removed: upstream's Google Search Console verification token, also from the published site |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)
