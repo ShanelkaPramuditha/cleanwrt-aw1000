@@ -16,7 +16,7 @@
 #
 # qbittorrent is part of the image but comes from the cwfeed, not the
 # luci feed, so it is written as a bare name and stays upgradable (apk upgrade from
-# the cw-opt feed). Packages installed after first boot (e.g. openclash) are added to
+# the cw-opt feed). Packages installed after first boot (e.g. mwan3) are added to
 # world without a pin by `apk add` and stay upgradable by design: none carries
 # build-time patches.
 

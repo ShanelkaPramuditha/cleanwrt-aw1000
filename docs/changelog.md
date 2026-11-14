@@ -24,6 +24,9 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 - **Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock are gone.** Their feeds, packages,
   cores (xray-core, sing-box, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others)
   and first-boot files are no longer in the image; Nikki is the proxy app.
+- **OpenClash is no longer built.** It was never in the image, only compiled for the optional
+  `cw-opt` feed, which was never published. Nikki runs the same Clash profiles, so the OpenClash
+  feed and its build step are gone, and with them the Ruby stack it pulled in.
 - **This fork's own links.** The router's newer-version notice now reads this fork's version list,
   so it never offers an upstream image (which would bring back the removed apps and drop Nikki).
   The os-release home and bug links, releases and issues point at this fork too.

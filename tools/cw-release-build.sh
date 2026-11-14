@@ -438,7 +438,7 @@ cfg_enable 'CONFIG_PACKAGE_kmod-qmi_wwan_s=y'
 # (c) upstream default-y packages that fail to build - force them off.
 # Reusable: EVERY make defconfig in this script must be followed by this pass -
 # defconfig re-enables default-y symbols (e.g. ruby's RUBY_ENABLE_YJIT, which
-# drags the rust host toolchain into the openclash closureb).
+# drags the rust host toolchain into any closure that pulls ruby).
 disable_broken_toggles() {
 for s in \
     RUBY_ENABLE_YJIT \
@@ -581,20 +581,16 @@ fi
 #     before an image carrying cw-opt.list is flashed anywhere: a dead feed entry
 #     breaks apk update. The first build compiles qt6base: budget +1-2 h.
 if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
-    echo "== opt-in artifacts: compiling the qBittorrent stack + OpenClash (OpenClash is not in the image) =="
+    echo "== opt-in artifacts: compiling the qBittorrent stack =="
     cp .config .config.cw-image
     cfg_enable 'CONFIG_PACKAGE_qbittorrent=y'
     cfg_enable 'CONFIG_PACKAGE_luci-app-qbittorrent=y'
-    # On-demand set: OpenClash (own feed). Not seeded; it stays out of the image
-    # and lands in the published cw-opt apk repo for anyone who wants it later. Runtime
-    # deps (ruby/ruby-yaml, libtorrent-rasterbar, krb5-libs…) are pulled into
-    # the same published set by the closure loop below - the
-    # official release repos do NOT carry them.
-    cfg_enable 'CONFIG_PACKAGE_luci-app-openclash=y'
+    # Runtime deps (libtorrent-rasterbar, krb5-libs…) are pulled into the same
+    # published set by the closure loop below - the official release repos do NOT
+    # carry them.
     make defconfig >/dev/null
     disable_broken_toggles
-    if make package/qbittorrent/compile package/luci-app-qbittorrent/compile \
-            package/luci-app-openclash/compile; then
+    if make package/qbittorrent/compile package/luci-app-qbittorrent/compile; then
         # An apk directory compiled outside the world build gets no signed index. `make package/index` merges every bin/packages/ dir into
         # one flat signed repository (staging_dir/packages/qualcommax/),
         # packages.adb signed with the tree's openssl apk key (private-key.pem -
@@ -620,7 +616,7 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
             for iter in 1 2 3 4 5 6 7 8; do
                 unresolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash 2>&1 \
+                    add -s qbittorrent luci-app-qbittorrent 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._-]+ \(no such package\)' | sed 's/ (no such package)//' )
                 unresolved=$(echo "$unresolved" | tr '\n' ' ' | sed 's/ *$//')
                 [ -z "$unresolved" ] && break
@@ -641,12 +637,12 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
                 # surviving feeds' outputs.
                 resolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent luci-app-openclash 2>&1 \
+                    add -s qbittorrent luci-app-qbittorrent 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._~-]+-[0-9][^([ ]*' | sed 's/^  *//; s/\[.*$//' | sort -u)
                 stale=""
                 for tok in $resolved; do
                     case "$tok" in
-                        qbittorrent-*|luci-app-qbittorrent-*|luci-app-openclash-*) ;;
+                        qbittorrent-*|luci-app-qbittorrent-*) ;;
                         *) continue ;;
                     esac
                     [ -n "$(find bin/packages/aarch64_cortex-a53 -name "$tok.apk" -print -quit)" ] || stale="$stale $tok"

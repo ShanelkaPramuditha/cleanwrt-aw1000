@@ -76,9 +76,8 @@ install brings back the version the image ships.
 | WireGuard | kernel module and `wireguard-tools`, **no tunnel configured** |
 | OpenVPN | installed, off, needs your `.ovpn` |
 | Nikki | installed, **off**. Its core is `mihomo-meta` (stable); the Zashboard dashboard is preinstalled. First boot moves its HTTP proxy port from 8080 (taken) to **7893** and sets a random dashboard secret and proxy password |
-| HomeProxy, Passwall, Passwall 2 | **not in the image** |
+| HomeProxy, Passwall, Passwall 2, OpenClash | **not in the image**. OpenClash is no longer built either: Nikki runs the same Clash profiles |
 | Tailscale, Cloudflare Tunnel | installed, off. They belong on [remote access](remote-access.md) |
-| OpenClash | **never seeded.** It lives in the optional `cw-opt` feed, which is not published yet |
 
 ## What is listening
 
