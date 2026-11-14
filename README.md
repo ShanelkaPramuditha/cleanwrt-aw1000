@@ -187,7 +187,7 @@ package feed.
 | Version label `-SP<n>` (first: `25.12.5-R2.2-SP1`), and the upgrade notice compares the whole label | `tools/cw-release-build.sh`, `configs/arcadyan_aw1000.seed`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch` |
 | The fork's own apk feed signing key (the image trusts it instead of upstream's) | `files/etc/apk/keys/public-key.pem` |
 | Leftover configs of the removed apps cleaned up on a keep-settings upgrade | `files/etc/uci-defaults/95-cw-drop-removed-apps` |
-| CI caches the host tools and cross toolchain between runs | `.github/workflows/build.yml` |
+| CI caches the host tools, the cross toolchain and Go's build cache between runs | `.github/workflows/build.yml` |
 | A page for maintaining the fork | `docs/fork-maintenance.md`, `mkdocs.yml` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where

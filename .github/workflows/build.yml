@@ -74,6 +74,10 @@ jobs:
           path: |
             /mnt/cw/openwrt/dl
             /mnt/cw/openwrt/.ccache
+            /mnt/cw/openwrt/tmp/go-build
+          # tmp/go-build is Go's build cache (GOCACHE in golang-package.mk): ccache does not see Go,
+          # so without it every Go package (mihomo, tailscale, cloudflared, syncthing, yq, ...)
+          # compiles from nothing on every run. Go keys entries by content and trims unused ones.
           # The tree tag is part of the key: a compiler cache built against another OpenWrt
           # release is not a cache for this one, and no cache is cheaper than a wrong one.
           key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
@@ -163,7 +167,7 @@ jobs:
           if [ -x /mnt/cw/openwrt/staging_dir/host/bin/ccache ]; then
             CCACHE_DIR=/mnt/cw/openwrt/.ccache /mnt/cw/openwrt/staging_dir/host/bin/ccache -s
           fi
-          du -sh /mnt/cw/openwrt/dl /mnt/cw/openwrt/.ccache 2>/dev/null || true
+          du -sh /mnt/cw/openwrt/dl /mnt/cw/openwrt/.ccache /mnt/cw/openwrt/tmp/go-build 2>/dev/null || true
           df -h /mnt
 
       - name: Save caches
@@ -173,6 +177,7 @@ jobs:
           path: |
             /mnt/cw/openwrt/dl
             /mnt/cw/openwrt/.ccache
+            /mnt/cw/openwrt/tmp/go-build
           key: cw-${{ steps.ver.outputs.tag }}-${{ hashFiles('feeds.conf.default', 'configs/**') }}-${{ github.run_id }}
 
       - name: Save toolchain cache
