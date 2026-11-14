@@ -36,7 +36,9 @@
     // the release workflow's size gate; the script's own default (80) is too small
     "CW_MAX_IMAGE_MB": "130",
     // compiler cache inside the tree (<tree>/.ccache), kept between builds
-    "CW_CCACHE": "1"
+    "CW_CCACHE": "1",
+    // the optional cw-opt feed set is not needed for a test image (cw-dev defaults it to 0)
+    "CW_BUILD_OPT_ARTIFACTS": "0"
   },
 
   "postCreateCommand": "sudo ln -sf /workspaces/cleanwrt/cleanwrt-aw1000/.devcontainer/cw-dev.sh /usr/local/bin/cw-dev",

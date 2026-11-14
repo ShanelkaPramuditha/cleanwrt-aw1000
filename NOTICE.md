@@ -39,6 +39,7 @@ upstream's, unchanged.
 | 2026-11-14 | `.github/workflows/build.yml`, `mkdocs.yml`, `docs/` | modified: toolchain cache in CI; navigation and docs for the above |
 | 2026-11-14 | `site-root/googlebcb1cf5d06c7bf33.html`, `.github/workflows/docs.yml` | removed: upstream's Google Search Console verification token, also from the published site |
 | 2026-11-14 | `.github/workflows/build.yml` | modified: Go build cache (`tmp/go-build`) kept between CI runs |
+| 2026-11-14 | `.devcontainer/cw-dev.sh`, `.devcontainer/devcontainer.json` | modified: local builds skip the optional cw-opt feed set unless `CW_BUILD_OPT_ARTIFACTS=1` |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)
