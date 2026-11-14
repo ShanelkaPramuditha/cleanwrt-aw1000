@@ -25,6 +25,11 @@ comparison: the build doesn't use it and the image contains none of its code. It
 their own licences (`PKG_LICENSE`, GPL-2.0 / GPL-2.0-only).
 
 1. Open `cleanwrt-aw1000` in VS Code → **Dev Containers: Reopen in Container**.
+   On Windows with Docker inside WSL, open it **from WSL first** (`code .` in the WSL
+   shell, or **WSL: Connect to WSL** → Open Folder; the status bar shows `WSL: Ubuntu`).
+   Opening the `\\wsl.localhost\...` path from a plain Windows window makes VS Code pipe its
+   ~240 MB server through `wsl.exe` into the container. That stream can get corrupted and
+   the setup fails at the very end with `gzip: stdin: invalid compressed data--format violated`.
 2. When it asks, **Open Workspace** (`cleanwrt.code-workspace`).
 3. Run tasks (Terminal → Run Task) or `cw-dev` in the terminal:
 

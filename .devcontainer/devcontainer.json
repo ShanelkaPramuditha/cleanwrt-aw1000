@@ -25,6 +25,8 @@
   },
   "remoteUser": "builder",
   "updateRemoteUserUID": true,
+  // tini as PID 1: reaps the orphans a long `make -j` leaves behind
+  "init": true,
 
   "workspaceMount": "source=${localWorkspaceFolder}/..,target=/workspaces/cleanwrt,type=bind",
   "workspaceFolder": "/workspaces/cleanwrt",
