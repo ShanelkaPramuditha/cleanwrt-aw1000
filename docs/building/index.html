@@ -2609,6 +2609,41 @@ it before a new release. The run stops before uploading anything when the tag al
 another commit, or when that release is already published: a published release is never rewritten.
 Running again with a draft still open refreshes the draft, and publishes it if you chose
 <code>prerelease</code> or <code>release</code>.</p>
+<p>Every release run, a pushed tag included, is checked before the build starts and again before
+anything is uploaded:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>When</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the <code>USIGN_KEY_BUILD</code>, <code>USIGN_KEY_BUILD_PUB</code> and <code>APK_PRIVATE_KEY</code> secrets are set</td>
+<td>before the build</td>
+<td>an unsigned image is refused by the router's signature check, and a throw-away package key signs packages no router trusts</td>
+</tr>
+<tr>
+<td><code>docs/changelog.md</code> has a <code>## &lt;CW_VERSION&gt;</code> section</td>
+<td>before the build</td>
+<td>that section becomes the release notes</td>
+</tr>
+<tr>
+<td>the package key is the one routers trust (<code>tools/cw-check-release-keys.sh</code>)</td>
+<td>inside the build</td>
+<td>the same check <code>opt_artifacts</code> runs</td>
+</tr>
+<tr>
+<td>the sysupgrade image carries a signature</td>
+<td>before the upload</td>
+<td>the same <code>fwtool</code> check the router runs before it flashes</td>
+</tr>
+</tbody>
+</table>
+<p>The release notes are the changelog section under <strong>What's new</strong>, followed by a short <strong>Files</strong>
+paragraph. Links between doc pages in that section become links to the documentation site.</p>
 <h2 id="locally">Locally<a class="headerlink" href="#locally" title="Permanent link">&para;</a></h2>
 <p>You need a Linux machine (or a Linux VM) and Docker.</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>--branch<span class="w"> </span>v25.12.5<span class="w"> </span>https://github.com/openwrt/openwrt.git<span class="w"> </span>openwrt
