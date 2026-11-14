@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the two proxy apps in the image: Nikki (mihomo, Clash profiles) and HomeProxy (sing-box).">
+        <meta name="description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the proxy app in the image: Nikki (mihomo, Clash profiles).">
       
       
       
@@ -27,7 +27,7 @@
     
     
       
-        <title>WireGuard, OpenVPN, Nikki and HomeProxy on OpenWrt - CleanWRT</title>
+        <title>WireGuard, OpenVPN and Nikki on OpenWrt - CleanWRT</title>
       
     
     
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="VPN and proxies - CleanWRT">
-<meta property="og:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the two proxy apps in the image: Nikki (mihomo, Clash profiles) and HomeProxy (sing-box).">
+<meta property="og:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the proxy app in the image: Nikki (mihomo, Clash profiles).">
 <meta property="og:url" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/">
 <meta property="og:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,13 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="VPN and proxies - CleanWRT">
-<meta name="twitter:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the two proxy apps in the image: Nikki (mihomo, Clash profiles) and HomeProxy (sing-box).">
+<meta name="twitter:description" content="The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the proxy app in the image: Nikki (mihomo, Clash profiles).">
 <meta name="twitter:image" content="https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "VPN and proxies", "item": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "VPN and proxies", "description": "The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the two proxy apps in the image: Nikki (mihomo, Clash profiles) and HomeProxy (sing-box).", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-14"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own .ovpn configuration. Both ship disabled."}}, {"@type": "Question", "name": "Can I use my Clash config?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with Nikki. Upload the YAML file or add its subscription URL on Services → Nikki → Profile. mihomo reads Clash and Clash Meta profiles."}}, {"@type": "Question", "name": "Where did Passwall go?", "acceptedAnswer": {"@type": "Answer", "text": "Passwall and Passwall 2 are not in this build. Nikki (mihomo) and HomeProxy (sing-box) cover the same use."}}, {"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is a kernel module plus tools and a LuCI page; OpenVPN is installed with its own page and needs your configuration file. Neither is configured out of the box."}}, {"@type": "Question", "name": "Can I install Passwall myself?", "acceptedAnswer": {"@type": "Answer", "text": "It is not built for this image, and its cores (xray-core and others) are not in the image either. Nikki and HomeProxy are the supported proxy apps."}}, {"@type": "Question", "name": "Which dashboard is it, and why that one?", "acceptedAnswer": {"@type": "Answer", "text": "Zashboard, the dashboard Nikki itself defaults to. The image carries its build without bundled fonts (it uses the system's), about 1.5 MiB on flash, so it opens without downloading anything."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "VPN and proxies", "description": "The VPN and proxy tools shipped in CleanWRT for the Arcadyan AW1000, what is off by default, and the proxy app in the image: Nikki (mihomo, Clash profiles).", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/features/vpn-proxy/", "image": "https://pr0luci.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://pr0luci.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-14"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is fully installed with no interfaces configured, and OpenVPN needs your own .ovpn configuration. Both ship disabled."}}, {"@type": "Question", "name": "Can I use my Clash config?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, with Nikki. Upload the YAML file or add its subscription URL on Services → Nikki → Profile. mihomo reads Clash and Clash Meta profiles."}}, {"@type": "Question", "name": "Where did Passwall go?", "acceptedAnswer": {"@type": "Answer", "text": "Passwall and Passwall 2 are not in this build. Nikki (mihomo) covers the same use, with Clash profiles."}}, {"@type": "Question", "name": "Does CleanWRT include WireGuard and OpenVPN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. WireGuard is a kernel module plus tools and a LuCI page; OpenVPN is installed with its own page and needs your configuration file. Neither is configured out of the box."}}, {"@type": "Question", "name": "Can I install Passwall myself?", "acceptedAnswer": {"@type": "Answer", "text": "It is not built for this image, and its cores (xray-core and others) are not in the image either. Nikki is the supported proxy app."}}, {"@type": "Question", "name": "Which dashboard is it, and why that one?", "acceptedAnswer": {"@type": "Answer", "text": "Zashboard, the dashboard Nikki itself defaults to. The image carries its build without bundled fonts (it uses the system's), about 1.5 MiB on flash, so it opens without downloading anything."}}]}</script>
 </head>
   
   
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              WireGuard, OpenVPN, Nikki and HomeProxy on OpenWrt
+              WireGuard, OpenVPN and Nikki on OpenWrt
             
           </span>
         </div>
@@ -1341,17 +1341,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#homeproxy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        HomeProxy
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#common-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2329,17 +2318,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#homeproxy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        HomeProxy
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#common-questions" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2451,18 +2429,8 @@ per configuration.</p>
 <td>mihomo (Clash Meta)</td>
 <td>a Clash YAML profile: a file or a subscription URL</td>
 </tr>
-<tr>
-<td>HomeProxy</td>
-<td><em>Services → HomeProxy</em></td>
-<td>sing-box</td>
-<td>nodes added in LuCI</td>
-</tr>
 </tbody>
 </table>
-<div class="admonition tip">
-<p class="admonition-title">Use one at a time</p>
-<p>Both install transparent-proxy firewall rules and take over DNS. Enable one.</p>
-</div>
 <h2 id="nikki">Nikki: Clash profiles and a dashboard<a class="headerlink" href="#nikki" title="Permanent link">&para;</a></h2>
 <p>Nikki runs the mihomo core with an ordinary Clash (Clash Meta) configuration, so a profile from
 your provider or one you wrote yourself works as it is.</p>
@@ -2481,9 +2449,6 @@ which traffic go through the proxy.</p>
 the first boot sets to 32 random characters (<code>nikki.mixin.api_secret</code>). LuCI passes it for you.</p>
 <p><strong>Update Dashboard</strong> downloads the newest Zashboard release over the installed one. A clean
 install brings back the version the image ships.</p>
-<h2 id="homeproxy">HomeProxy<a class="headerlink" href="#homeproxy" title="Permanent link">&para;</a></h2>
-<p>Add a node (server), set the routing mode and enable. <code>dnsmasq-full</code> is already in the image, so
-HomeProxy can hand its DNS rules to dnsmasq.</p>
 <h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>Does CleanWRT include WireGuard and OpenVPN?</summary>
@@ -2495,7 +2460,7 @@ HomeProxy can hand its DNS rules to dnsmasq.</p>
 </details>
 <details class="question">
 <summary>Where did Passwall go?</summary>
-<p>Passwall and Passwall 2 are not in this build. Nikki (mihomo) and HomeProxy (sing-box) cover the same use.</p>
+<p>Passwall and Passwall 2 are not in this build. Nikki (mihomo) covers the same use, with Clash profiles.</p>
 </details>
 <h2 id="out-of-the-box">Out of the box<a class="headerlink" href="#out-of-the-box" title="Permanent link">&para;</a></h2>
 <table>
@@ -2519,16 +2484,12 @@ HomeProxy can hand its DNS rules to dnsmasq.</p>
 <td>installed, <strong>off</strong>. Its core is <code>mihomo-meta</code> (stable); the Zashboard dashboard is preinstalled. First boot moves its HTTP proxy port from 8080 (taken) to <strong>7893</strong> and sets a random dashboard secret and proxy password</td>
 </tr>
 <tr>
-<td>HomeProxy</td>
-<td>installed, <strong>off</strong>. Its core, <code>sing-box</code>, is in the image (from the official OpenWrt packages feed)</td>
+<td>HomeProxy, Passwall, Passwall 2</td>
+<td><strong>not in the image</strong></td>
 </tr>
 <tr>
 <td>Tailscale, Cloudflare Tunnel</td>
 <td>installed, off. They belong on <a href="../remote-access/">remote access</a></td>
-</tr>
-<tr>
-<td>Passwall, Passwall 2</td>
-<td><strong>not in the image</strong></td>
 </tr>
 <tr>
 <td>OpenClash</td>
@@ -2559,20 +2520,16 @@ the router and the LAN, and none of them is forwarded from the cellular side by 
 <td>the API address or secret. Open it from LuCI's <strong>Open Dashboard</strong>, which fills both in</td>
 </tr>
 <tr>
-<td>Nikki and HomeProxy both enabled, traffic goes the wrong way</td>
-<td>run one. Both install transparent-proxy rules</td>
+<td>Nikki and a VPN fight over the traffic</td>
+<td>run Nikki or a full-tunnel VPN, not both. Each installs its own routing rules</td>
 </tr>
 <tr>
-<td>HomeProxy and a VPN fight over the traffic</td>
-<td>run one transparent proxy or full-tunnel VPN at a time. Each installs its own routing rules</td>
+<td>A proxy in your profile is refused</td>
+<td>check that mihomo supports its protocol. mihomo is the only proxy core in the image</td>
 </tr>
 <tr>
-<td><code>apk upgrade</code> pulled a different version of sing-box</td>
+<td><code>apk upgrade</code> pulled a different mihomo</td>
 <td>the feed pins decide what the image is built with; see <a href="../../updating/">updating and pinning</a></td>
-</tr>
-<tr>
-<td>A server you added is refused</td>
-<td>check that sing-box supports its protocol. sing-box is the only proxy core in the image</td>
 </tr>
 </tbody>
 </table>
@@ -2585,7 +2542,7 @@ page and needs your configuration file. Neither is configured out of the box.</p
 <details class="question">
 <summary>Can I install Passwall myself?</summary>
 <p>It is not built for this image, and its cores (xray-core and others) are not in the image either.
-Nikki and HomeProxy are the supported proxy apps.</p>
+Nikki is the supported proxy app.</p>
 </details>
 <details class="question">
 <summary>Which dashboard is it, and why that one?</summary>
