@@ -2353,6 +2353,12 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased-this-fork">Unreleased (this fork)<a class="headerlink" href="#unreleased-this-fork" title="Permanent link">&para;</a></h2>
 <ul>
+<li><strong>Nikki, with a dashboard.</strong> Nikki runs the mihomo (Clash Meta) core from your own Clash YAML
+  profile or subscription, under <em>Services → Nikki</em>. The Zashboard dashboard is preinstalled
+  (about 1.5 MiB), so <strong>Open Dashboard</strong> works offline: switch proxies, test latency, watch
+  connections, rules and logs. It ships off. First boot moves its HTTP proxy port from 8080, which
+  the image already uses, to 7893, and replaces Nikki's six-digit dashboard secret and proxy
+  password with random 32-character ones.</li>
 <li><strong>Passwall, Passwall 2, AdGuard Home and Adblock are gone.</strong> Their feeds, packages, cores
   (xray-core, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others) and first-boot
   files are no longer in the image. HomeProxy is the proxy app, on the sing-box of the official
