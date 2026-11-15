@@ -2400,6 +2400,11 @@
 <li><strong>Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock are gone.</strong> Their feeds, packages,
   cores (xray-core, sing-box, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others)
   and first-boot files are no longer in the image; Nikki is the proxy app.</li>
+<li><strong>The login page is centred.</strong> The sign-in card sits in the middle of the screen instead of near
+  the top.</li>
+<li><strong>Signed release images.</strong> Every release image carries the project's signature, and the image
+  holds the matching public key in <code>/etc/opkg/keys/</code>. OpenWrt 25.12 had silently stopped signing
+  images built with the key in place; the build now makes the certificate it needs.</li>
 <li><strong>OpenClash is no longer built.</strong> It was never in the image, only compiled for the optional
   <code>cw-opt</code> feed, which was never published. Nikki runs the same Clash profiles, so the OpenClash
   feed and its build step are gone, and with them the Ruby stack it pulled in.</li>

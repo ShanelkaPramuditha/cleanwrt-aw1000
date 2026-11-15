@@ -70,7 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "The Footstrap theme", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/theme/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Footstrap theme", "description": "The default web interface of CleanWRT: dark and light modes, top bar or sidebar, five palettes, an accent colour, frosted surfaces and a wallpaper.", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/theme/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT have a dark mode?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it is the default. System → Footstrap → Colour scheme → Mode offers Auto (follows your system), Light and Dark; a browser can also keep its own choice, which Reset to router gives up."}}, {"@type": "Question", "name": "Does the theme work on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The layout collapses below 768 px, and the density and content width are adjustable on the settings page."}}, {"@type": "Question", "name": "How do I switch back to the default OpenWrt theme?", "acceptedAnswer": {"@type": "Answer", "text": "Go to System → System → Language and Style → Design and pick Bootstrap. Bootstrap stays installed in the image precisely so that this is always possible."}}, {"@type": "Question", "name": "Does CleanWRT patch the theme?", "acceptedAnswer": {"@type": "Answer", "text": "One line, for branding: the login page shows the CleanWRT logo instead of the router's hostname. Everything else is the upstream package at its pinned commit. The logo is this repository's own file (files/www/luci-static/cw-branding/login-logo.png), outside the theme's directory, so a theme update can neither overwrite it nor collide with the patch. The look a new router starts with is added by a first-boot script and two background files, not by a patch."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does CleanWRT have a dark mode?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it is the default. System → Footstrap → Colour scheme → Mode offers Auto (follows your system), Light and Dark; a browser can also keep its own choice, which Reset to router gives up."}}, {"@type": "Question", "name": "Does the theme work on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The layout collapses below 768 px, and the density and content width are adjustable on the settings page."}}, {"@type": "Question", "name": "How do I switch back to the default OpenWrt theme?", "acceptedAnswer": {"@type": "Answer", "text": "Go to System → System → Language and Style → Design and pick Bootstrap. Bootstrap stays installed in the image precisely so that this is always possible."}}, {"@type": "Question", "name": "Does CleanWRT patch the theme?", "acceptedAnswer": {"@type": "Answer", "text": "Only the login page: it shows the CleanWRT logo instead of the router's hostname, and its card is centred on the screen instead of sitting near the top. Everything else is the upstream package at its pinned commit. The logo is this repository's own file (files/www/luci-static/cw-branding/login-logo.png), outside the theme's directory, so a theme update can neither overwrite it nor collide with the patch. The look a new router starts with is added by a first-boot script and two background files, not by a patch."}}]}</script>
 </head>
   
   
@@ -2388,10 +2388,11 @@
 upstream as
 <a href="https://github.com/VizzleTF/luci-theme-footstrap"><code>luci-theme-footstrap</code></a> (Apache-2.0), pinned to
 one commit in <code>configs/local-packages.pin</code>
-like every other out-of-feed package here. <strong>CleanWRT changes one line of it</strong> -
-<code>patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch</code> puts the CleanWRT
-logo on the login page where the theme otherwise prints the router's hostname - and nothing else: what
-you see is the theme as its own author publishes it, selected by
+like every other out-of-feed package here. <strong>CleanWRT changes only its login page</strong>, with two small
+patches: <code>patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch</code> puts the
+CleanWRT logo where the theme otherwise prints the router's hostname, and
+<code>0002-login-card-centred-in-the-viewport.patch</code> centres the login card on the screen. Everything else
+is the theme as its own author publishes it, selected by
 <code>files/etc/uci-defaults/96-cw-default-theme</code>
 on first boot.</p>
 <h2 id="what-it-looks-like">What it looks like<a class="headerlink" href="#what-it-looks-like" title="Permanent link">&para;</a></h2>
@@ -2508,8 +2509,9 @@ installed in the image precisely so that this is always possible.</p>
 </details>
 <details class="question">
 <summary>Does CleanWRT patch the theme?</summary>
-<p>One line, for branding: the login page shows the CleanWRT logo instead of the router's hostname.
-Everything else is the upstream package at its pinned commit. The logo is this repository's own
+<p>Only the login page: it shows the CleanWRT logo instead of the router's hostname, and its card
+is centred on the screen instead of sitting near the top. Everything else is the upstream
+package at its pinned commit. The logo is this repository's own
 file (<code>files/www/luci-static/cw-branding/login-logo.png</code>), outside the theme's directory, so a
 theme update can neither overwrite it nor collide with the patch. The look a new router starts
 with is added by a first-boot script and two background files, not by a patch.</p>

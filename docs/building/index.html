@@ -2666,7 +2666,7 @@ the next release: a published release is never rewritten, and a build of a relea
 <tr>
 <td>the <code>USIGN_KEY_BUILD</code>, <code>USIGN_KEY_BUILD_PUB</code> and <code>APK_PRIVATE_KEY</code> secrets are set</td>
 <td>before the build</td>
-<td>an unsigned image is refused by the router's signature check, and a throw-away package key signs packages no router trusts</td>
+<td>a release image carries the project's signature, which a router with <code>ucert</code> installed verifies before it flashes, and a throw-away package key signs packages no router trusts</td>
 </tr>
 <tr>
 <td><code>docs/changelog.md</code> has a <code>## &lt;CW_VERSION&gt;</code> section</td>
@@ -2767,8 +2767,13 @@ package in every image. Running <code>mkpkg</code> with a fixed epoch is the cha
 package's own source date still sets its <code>SourceDateEpoch</code>, and rootfs timestamps are normalised as
 before, so nothing on the device changes.</p>
 <p>On GitHub Actions these keys come from the repository secrets <code>APK_PRIVATE_KEY</code>,
-<code>USIGN_KEY_BUILD</code> and <code>USIGN_KEY_BUILD_PUB</code>. Without them the images are unsigned and the
-<code>cw-opt</code> feed stays disabled.</p>
+<code>USIGN_KEY_BUILD</code> and <code>USIGN_KEY_BUILD_PUB</code>. A build that puts its images in the draft release
+refuses to start without them, so every release is signed. A local build without the keys makes
+unsigned images, and the <code>cw-opt</code> feed stays disabled.</p>
+<p>On OpenWrt 25.12 the buildroot no longer makes the certificate an image signature needs
+(<code>key-build.ucert</code>; it did so only for opkg builds), so <code>tools/cw-release-build.sh</code> makes it from the
+staged key (step 5b), and puts the public key in the image at <code>/etc/opkg/keys/</code>, where the router's
+signature check looks for it.</p>
 <h2 id="what-this-build-changes-upstream">What this build changes upstream<a class="headerlink" href="#what-this-build-changes-upstream" title="Permanent link">&para;</a></h2>
 <p>Every patch this repository applies to someone else's code, and what each one is for. They are
 applied with <code>patch -p1</code> at <strong>zero fuzz</strong>: a patch that does not apply cleanly fails the build rather
@@ -2898,6 +2903,10 @@ than shipping a half-applied change.</p>
 <tr>
 <td><code>packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo</code></td>
 <td>one line: the login page shows the CleanWRT logo where the theme prints the router's hostname. The image file lives outside the theme's own directory, so a theme update can neither overwrite it nor collide with the patch</td>
+</tr>
+<tr>
+<td><code>packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport</code></td>
+<td>the login card sits in the middle of the screen instead of 7vh from the top; on a screen shorter than the card the page scrolls from the top as before</td>
 </tr>
 </tbody>
 </table>
