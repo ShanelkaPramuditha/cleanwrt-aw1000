@@ -1695,6 +1695,8 @@
       
         
       
+        
+      
     
     
     
@@ -1755,6 +1757,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2379,8 +2409,13 @@ rows.</p>
 <td>the number is part of the fix: the package's own <code>50-attendedsysupgrade</code> creates that config file, without the option, and uci-defaults run in name order — anything numbered below 50 is written into a file that does not exist yet and is then overwritten. A router whose owner answered the question keeps that answer, because the option is already there</td>
 </tr>
 <tr>
+<td><code>53-cw-qbittorrent-port</code></td>
+<td>sets <code>qbittorrent.config.http_port='8081'</code> where it is <code>8080</code>, so a qBittorrent configuration kept from an older router does not collide with the provisioning listener on 8080</td>
+<td>exits unless the option is exactly <code>8080</code>: any other port you chose stays</td>
+</tr>
+<tr>
 <td><code>95-cw-drop-removed-apps</code></td>
-<td>after a keep-settings upgrade from an image that carried them: deletes <code>/etc/config/{passwall,passwall2,homeproxy,adguardhome,adblock}</code>, AdGuard Home's <code>/etc/adguardhome.yaml</code> and <code>/etc/adguardhome</code>, and the <code>passwall*</code> firewall include sections</td>
+<td>after a keep-settings upgrade from an image that carried them: deletes <code>/etc/config/{passwall,passwall2,homeproxy,adblock}</code> and the <code>passwall*</code> firewall include sections. AdGuard Home's and p910nd's settings are <strong>kept</strong> (both are <a href="../../install-apps/">optional installs</a>). While AdGuard Home is not installed, it also puts dnsmasq back on port 53 if its setup had moved it, so DNS keeps working after an upgrade</td>
 <td>each app only when its init script is absent, so reinstalling one keeps its settings. Nothing to do on a router that never had them</td>
 </tr>
 <tr>
@@ -2405,7 +2440,7 @@ rows.</p>
 </tr>
 <tr>
 <td><code>99_zz-cw-nikki-defaults</code></td>
-<td>Nikki: <code>nikki.mixin.http_port</code> from <code>8080</code> (taken by the provisioning listener and qBittorrent) to <code>7893</code>; <code>nikki.mixin.api_secret</code> and the proxy password from Nikki's six-digit number to 32 random hex characters</td>
+<td>Nikki: <code>nikki.mixin.http_port</code> from <code>8080</code> (taken by the provisioning listener) to <code>7893</code>; <code>nikki.mixin.api_secret</code> and the proxy password from Nikki's six-digit number to 32 random hex characters</td>
 <td>runs once (<code>nikki.config.cw_defaults</code>), after Nikki's own <code>99_init_nikki</code> — hence the <code>99_</code> name, since <code>-</code> sorts before <code>_</code>. A port or secret you changed is left alone</td>
 </tr>
 <tr>
@@ -2471,7 +2506,11 @@ in <a href="../options/">UCI options</a>.</p>
 </tr>
 <tr>
 <td><code>syncthing</code></td>
-<td><code>enabled='0'</code>; when on, its own interface on <code>0.0.0.0:8384</code> and its config in <code>/etc/syncthing</code></td>
+<td><code>enabled='0'</code>; when on, its own interface on <code>0.0.0.0:8384</code> and its config in <code>/etc/syncthing</code>. The app is not in the image: the file waits for an <a href="../../install-apps/#syncthing">install</a>, which keeps it</td>
+</tr>
+<tr>
+<td><code>qbittorrent</code></td>
+<td><code>enabled='0'</code>, <code>download_dir='/mnt/download'</code>, <code>http_port='8081'</code> (8080 is the provisioning listener's). The app is not in the image: the file waits for an <a href="../../install-apps/#qbittorrent">install</a>, which keeps it</td>
 </tr>
 <tr>
 <td><code>watchcat</code></td>

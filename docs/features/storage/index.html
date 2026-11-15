@@ -1740,6 +1740,8 @@
       
         
       
+        
+      
     
     
     
@@ -1800,6 +1802,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2420,7 +2450,7 @@ every reboot. The <code>smartd</code> daemon ships disabled; the UI only uses th
 <p>Everything below is pointed at the USB drive and stays off until you enable it; nothing listens
 on the LAN before that. qBittorrent and Syncthing are not in the image: install them first
 (<code>apk update &amp;&amp; apk add qbittorrent luci-app-qbittorrent</code> or <code>apk add syncthing luci-app-syncthing</code>,
-see <a href="../web-apps/">web apps</a>). <strong>Set credentials before you enable each service.</strong></p>
+see <a href="../../install-apps/">Install optional apps</a>). <strong>Set credentials before you enable each service.</strong></p>
 <table>
 <thead>
 <tr>
@@ -2438,7 +2468,7 @@ see <a href="../web-apps/">web apps</a>). <strong>Set credentials before you ena
 <tr>
 <td>Torrents (qBittorrent)</td>
 <td><em>Services → qBittorrent</em></td>
-<td>web UI on <code>:8080</code>; downloads go to <code>/mnt/download</code></td>
+<td>web UI on <code>:8081</code>; downloads go to <code>/mnt/download</code></td>
 </tr>
 <tr>
 <td>Folder sync (Syncthing)</td>
@@ -2534,7 +2564,7 @@ it does not re-scan on every reboot.</p>
 <tr>
 <td>p910nd (printer share)</td>
 <td><strong>not in the image</strong></td>
-<td><code>apk add p910nd luci-app-p910nd</code> if you need it</td>
+<td><code>apk add kmod-usb-printer p910nd luci-app-p910nd</code>, see <a href="../../install-apps/#printer-server-p910nd">Install optional apps</a></td>
 </tr>
 <tr>
 <td><code>hd-idle</code></td>
@@ -2579,9 +2609,9 @@ it does not re-scan on every reboot.</p>
 <td>off</td>
 </tr>
 <tr>
-<td>8080</td>
+<td>8081</td>
 <td>qBittorrent's own interface</td>
-<td>off until the app is enabled</td>
+<td>off until the app is installed and enabled</td>
 </tr>
 </tbody>
 </table>

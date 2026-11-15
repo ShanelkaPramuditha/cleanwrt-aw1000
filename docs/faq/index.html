@@ -1603,6 +1603,8 @@
       
         
       
+        
+      
     
     
     
@@ -1663,6 +1665,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2306,8 +2336,8 @@
 <li><strong>AWvoice is not for emergency calls.</strong> See the safety notes on the <a href="../awvoice/">AWvoice</a> page.</li>
 <li><strong>Release images are signed</strong> with the project's key. The router checks the signature only when
   the <code>ucert</code> package is installed, which the image does not do by default.</li>
-<li><strong>Some apps are one install away, not in the image:</strong> Tailscale, Cloudflare Tunnel, Syncthing and
-  qBittorrent. See <a href="../included/#one-install-away">what is included</a>.</li>
+<li><strong>Some apps are one install away, not in the image:</strong> Tailscale, Cloudflare Tunnel, Syncthing,
+  qBittorrent and AdGuard Home. See <a href="../install-apps/">Install optional apps</a>.</li>
 <li>The modem's own firmware is separate and is not provided by this project.</li>
 <li><strong>The phone line is on as installed</strong>, because a phone that does not ring is the failure people
   notice first. Everything else that makes noise — recordings, the answering machine, quiet hours,
@@ -2396,7 +2426,7 @@ See <a href="../modem/">The 5G modem</a>. A modem firmware upgrade is only a las
 <details class="question">
 <summary>The 5G and signal LEDs went dark.</summary>
 <p>The LED daemon cannot read the modem. Check that nothing holds the AT port open, and read
-<code>logread -e cw-led</code>. See <a href="../leds/#troubleshooting">Front-panel LEDs</a>.</p>
+<code>logread -e cw-led</code>. See <a href="../leds/#if-a-lamp-looks-wrong">Front-panel LEDs</a>.</p>
 </details>
 <details class="question">
 <summary>Wi-Fi works but 'Internet' says unreachable.</summary>

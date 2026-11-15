@@ -1728,6 +1728,8 @@
       
         
       
+        
+      
     
     
     
@@ -1788,6 +1790,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2392,7 +2422,8 @@ apk<span class="w"> </span>add<span class="w"> </span>qbittorrent<span class="w"
 </code></pre></div>
 <p><code>syncthing</code> comes from the official OpenWrt repositories. <code>luci-app-syncthing</code>, <code>qbittorrent</code> and
 <code>luci-app-qbittorrent</code> come from this project's own signed feed, <code>cw-opt</code>, which the image already
-lists (<a href="../../extra-packages/">extra packages</a>). Both apps arrive switched off.</p>
+lists (<a href="../../extra-packages/">extra packages</a>). Both apps arrive switched off. Step by step, from LuCI
+or SSH: <a href="../../install-apps/">Install optional apps</a>.</p>
 <h2 id="start-and-stop-an-app">Start and stop an app<a class="headerlink" href="#start-and-stop-an-app" title="Permanent link">&para;</a></h2>
 <p>Every app has an <strong>Enable</strong> box on its LuCI page (<em>Services → the app's name</em>). Tick it and press
 <strong>Save &amp; Apply</strong> to start; untick it and press <strong>Save &amp; Apply</strong> to stop. One switch, the same
@@ -2414,7 +2445,7 @@ to <code>http://127.0.0.1:8384</code>.</p>
 <p>Downloads to a USB drive attached to the router, controlled from a web page.</p>
 <ol>
 <li><em>Services → qBittorrent</em>, tick <strong>Enable</strong>, <strong>Save &amp; Apply</strong>.</li>
-<li>Open <code>http://192.168.1.1:8080</code>.</li>
+<li>Open <code>http://192.168.1.1:8081</code> (not 8080: the router's provisioning listener holds that port).</li>
 <li>The user is <code>admin</code>. There is no shared default password: until you set your own, qBittorrent
    makes a temporary one every time it starts and prints it to the log. Read it with
    <code>logread -e qbittorrent</code> (<em>System → Logs</em>).</li>

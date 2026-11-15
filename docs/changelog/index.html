@@ -1600,6 +1600,8 @@
       
         
       
+        
+      
     
     
     
@@ -1660,6 +1662,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2406,6 +2436,16 @@
   this project's own signed feed, <code>cw-opt</code>, which every router now lists. One line each, see
   <a href="../included/#one-install-away">what is included</a>. A keep-settings upgrade removes the apps from
   a router that had them, and keeps their settings for a reinstall.</li>
+<li><strong>A guide for the optional apps.</strong> <a href="../install-apps/">Install optional apps</a> walks through
+  installing and setting up Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, AdGuard Home and
+  the USB printer server, from <em>System → Software</em> or the command line.</li>
+<li><strong>AdGuard Home's and the printer server's settings survive a firmware upgrade.</strong> They used to be
+  deleted on the first boot of a new image; now a reinstall brings them back. While AdGuard Home
+  is not installed, the first boot also puts DNS back on dnsmasq (port 53), so an upgrade never
+  leaves the network without name lookups.</li>
+<li><strong>qBittorrent's web UI moves to port 8081.</strong> Port 8080 belongs to the provisioning listener for
+  network phones, so qBittorrent's page never opened there. A router upgraded with an older
+  qBittorrent configuration is moved to 8081 too.</li>
 <li><strong>Night mode can switch off the Phone LED.</strong> <em>System → LED Management → Night mode</em> lists
   <strong>Phone</strong> under <em>Keep on during night</em>; untick it and the phone lamp stays dark inside the night
   window while the phone keeps working. It is ticked by default, so nothing changes until you

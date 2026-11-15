@@ -1751,6 +1751,8 @@
       
         
       
+        
+      
     
     
     
@@ -1811,6 +1813,34 @@
     
   
     What is included
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install-apps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install optional apps
   
 
     
@@ -2436,7 +2466,7 @@ LAN from outside, pick <strong>one</strong> of these. All of them ship <strong>d
 </div>
 <h2 id="tailscale">Tailscale<a class="headerlink" href="#tailscale" title="Permanent link">&para;</a></h2>
 <p>A mesh VPN, and the easiest option. It is not in the image (it is a large program); install it
-from the official OpenWrt repositories first:</p>
+from the official OpenWrt repositories first (<a href="../../install-apps/#tailscale">step by step</a>):</p>
 <div class="highlight"><pre><span></span><code>apk<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apk<span class="w"> </span>add<span class="w"> </span>tailscale<span class="w"> </span>luci-app-tailscale-community
 /etc/init.d/tailscale<span class="w"> </span><span class="nb">enable</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/etc/init.d/tailscale<span class="w"> </span>start
 tailscale<span class="w"> </span>up<span class="w">        </span><span class="c1"># prints a login URL; open it to authenticate</span>
@@ -2444,7 +2474,8 @@ tailscale<span class="w"> </span>up<span class="w">        </span><span class="c
 <p>The LuCI page is <em>Services → Tailscale</em>.</p>
 <h2 id="cloudflare-tunnel">Cloudflare Tunnel<a class="headerlink" href="#cloudflare-tunnel" title="Permanent link">&para;</a></h2>
 <p>Exposes a service through your Cloudflare account, with no public IP needed. Install it first,
-from the official OpenWrt repositories: <code>apk update &amp;&amp; apk add cloudflared luci-app-cloudflared</code>.</p>
+from the official OpenWrt repositories: <code>apk update &amp;&amp; apk add cloudflared luci-app-cloudflared</code>
+(<a href="../../install-apps/#cloudflare-tunnel">step by step</a>).</p>
 <p><em>Services → Cloudflare Zero Trust Tunnel → Configuration</em>: paste your tunnel token and enable.</p>
 <div class="admonition info">
 <p class="admonition-title">A red <code>cloudflared</code> error is normal until you configure it</p>
