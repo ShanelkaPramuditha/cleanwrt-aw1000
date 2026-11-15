@@ -1,13 +1,10 @@
-# cw-opt: CleanWRT binary feed for what the official OpenWrt repositories do not
-# carry (the qBittorrent stack, also baked into the image, and its dependency
-# closure). Hosted at
-# https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/
+# cw-opt: CleanWRT's own signed apk feed, for what the official OpenWrt repositories do not
+# carry and the image leaves out to stay small: qBittorrent with its Qt6 stack
+# (`apk add qbittorrent luci-app-qbittorrent`) and the Syncthing switch (`apk add syncthing
+# luci-app-syncthing`). The index is signed with this project's key, which the image trusts
+# (/etc/apk/keys/public-key.pem).
 #
-# This file is NOT active: apk only reads repositories.d/*.list. To enable the feed:
-#   1. build once so the tree creates its apk signing key (<tree>/private-key.pem)
-#   2. copy the public half to files/etc/apk/keys/public-key.pem
-#      (tools/cw-check-release-keys.sh compares the two)
-#   3. publish the index first (tools/cw-publish-feed.sh): an image that carries a
-#      dead feed entry breaks `apk update` on every device
-#   4. rename this file to cw-opt.list and rebuild the image
+# Built and published by the `feed` workflow (tools/cw-publish-feed.sh) to the project site.
+# The build workflow refuses to build an image while this URL does not answer: a dead feed
+# entry would break `apk update` on every router.
 https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/packages.adb

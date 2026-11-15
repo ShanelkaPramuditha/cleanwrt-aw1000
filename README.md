@@ -47,7 +47,7 @@ checksums and a provenance bundle.
 | **5G that just works** | QModem, auto-dial and auto-recovery, dual-stack IPv4/IPv6, SMS, TTL control, per-interface data usage, and a registration fix for data-only SIMs. |
 | **A modern interface** | Footstrap: dark or light mode, a top bar or a sidebar, five palettes, an accent colour you choose, frosted surfaces, and a photo or pattern behind the pages. |
 | **LEDs that mean something** | The 5G LED shows SA or NSA, the signal LED shows quality, the internet LED runs a real connectivity check, and night mode switches them off at bedtime. |
-| **Tools, but off by default** | Nikki (mihomo with your Clash profiles and a dashboard), WireGuard, OpenVPN, Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, DLNA, file sharing and a printer server. Nothing listens until you tick **Enable**. |
+| **Tools, but off by default** | Nikki (mihomo with your Clash profiles and a dashboard), WireGuard, OpenVPN, DLNA and file sharing in the image; Tailscale, Cloudflare Tunnel, Syncthing and qBittorrent one `apk add` away. Nothing listens until you tick **Enable**. |
 | **Careful defaults** | HTTPS for the admin UI, no hidden remote access, BBR congestion control, pinned LuCI so an `apk upgrade` cannot undo the build. |
 | **Verifiable builds** | Built on GitHub Actions in a pinned Docker environment from commits you can read, with checksums and a provenance bundle for each release. |
 
@@ -196,6 +196,7 @@ package feed.
 | Night mode can switch off the Phone LED (a memory-only hold in the phone service, asked for by the LED app) | `patches/packages/awvoice-phoned/`, `patches/packages/luci-app-cw-led/` |
 | The p910nd printer share and the unused OHCI USB driver removed | `configs/arcadyan_aw1000.seed`, `files/`, `patches/feeds/luci/`, `docs/` |
 | Every release carries the image signing public key | `.github/workflows/` |
+| A smaller image: Tailscale, Cloudflare Tunnel, Syncthing and qBittorrent are one `apk add` away; the project's signed cw-opt feed (qBittorrent, the Syncthing switch) is published by a new `feed` workflow and listed on every router | `configs/`, `tools/`, `files/etc/`, `.github/workflows/`, `docs/` |
 | Build once, publish the tested files: builds fill a private draft release (signature verified, notes from the changelog), and a separate `release` workflow publishes it without rebuilding | `.github/workflows/`, `docs/` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where

@@ -55,7 +55,7 @@ run_build() {
     # The release script must run as root: it chowns the rootfs overlay to 0:0 so
     # every file on the device belongs to root (as in CI). Only the build runs as
     # root; the repo is only read, and the log and images stay yours.
-    # The release script compiles the optional cw-opt feed set (qBittorrent stack
+    # The release script compiles the cw-opt feed set (qBittorrent stack, the Syncthing switch
     # and its dependency closure) unless told not to: hours that a local test
     # image does not need. CI opts in explicitly; locally it is off unless you set it.
     export CW_BUILD_OPT_ARTIFACTS="${CW_BUILD_OPT_ARTIFACTS:-0}"

@@ -1,24 +1,25 @@
 name: build
 
 on:
+  # One choice by hand. Not offered, because they did nothing useful here: a clean rebuild
+  # (every run starts from a freshly cloned tree with no .config, so the build script skips it),
+  # images as a workflow artifact (public to anyone signed in, while the draft keeps them
+  # private), and compiling the cw-opt feed (the feed workflow does that, and publishes it).
   workflow_dispatch:
     inputs:
-      clean:
-        description: "Rebuild all packages (make clean) instead of an incremental build"
+      draft:
+        description: "Put the images in the private draft release v<CW_VERSION> (needs the signing secrets and a live cw-opt feed); untick for a test build"
         type: boolean
-        default: false
+        default: true
+  # The feed workflow runs this same build with opt_artifacts on and publishes the feed it makes.
+  workflow_call:
+    inputs:
       opt_artifacts:
-        description: "Also compile and verify the optional cw-opt apk feed (needs the signing key secret)"
-        type: boolean
-        default: false
-      artifacts:
-        description: "Upload the images as a workflow artifact (public repository: anyone signed in to GitHub can download it)"
         type: boolean
         default: false
       draft:
-        description: "Put the images in the private draft release v<CW_VERSION> (needs the signing secrets); publish it later with the release workflow"
         type: boolean
-        default: true
+        default: false
 
 permissions:
   contents: read
@@ -43,7 +44,7 @@ jobs:
     outputs:
       version: ${{ steps.ver.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Version
         id: ver
@@ -56,8 +57,9 @@ jobs:
 
       # A draft is checked before the two-hour build, not after it: it needs the signing keys
       # (an unsigned image fails the router's signature check on sysupgrade, and a throw-away
-      # apk key signs a feed no router trusts), a changelog section for its notes, and a version
-      # that is not released yet.
+      # apk key signs a feed no router trusts), a changelog section for its notes, a version
+      # that is not released yet, and a live cw-opt feed: the image lists it, and a dead feed
+      # entry breaks `apk update` on every router.
       - name: Release checks
         if: steps.ver.outputs.draft == 'true'
         env:
@@ -81,6 +83,12 @@ jobs:
           if [ -n "$at" ] && [ "$at" != "$GITHUB_SHA" ]; then
             echo "::error::tag $tag exists at $at, not at this commit $GITHUB_SHA - bump CW_VERSION or delete the tag"; bad=1
           fi
+          list=files/etc/apk/repositories.d/cw-opt.list
+          if [ -f "$list" ]; then
+            url=$(grep -v '^#' "$list" | grep -m1 .)
+            curl -sSfI --max-time 30 "$url" > /dev/null ||
+              { echo "::error::the cw-opt feed ($url) does not answer: run the feed workflow first"; bad=1; }
+          fi
           exit "$bad"
 
       - name: Free disk space
@@ -99,7 +107,7 @@ jobs:
           git clone --depth 1 --branch "$tag" https://github.com/openwrt/openwrt.git /mnt/cw/openwrt
 
       - name: Restore caches
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             /mnt/cw/openwrt/dl
@@ -132,7 +140,7 @@ jobs:
 
       - name: Restore toolchain cache
         id: tc
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: |
             /mnt/cw/openwrt/staging_dir/host
@@ -184,12 +192,10 @@ jobs:
           CW_REQUIRE_RELEASE_KEYS: ${{ ((inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') || steps.ver.outputs.draft == 'true') && '1' || '0' }}
         run: |
           set -o pipefail
-          flag=""
-          [ "${{ inputs.clean }}" = "true" ] && flag="--clean"
           docker run --rm \
             -e CW_CCACHE -e CW_BUILD_OPT_ARTIFACTS -e CW_REQUIRE_RELEASE_KEYS -e CW_MAX_IMAGE_MB \
             -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt \
-            cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build $flag 2>&1 | tee /mnt/cw/build.log
+            cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build 2>&1 | tee /mnt/cw/build.log
 
       - name: Compiler cache statistics
         if: always()
@@ -202,7 +208,7 @@ jobs:
 
       - name: Save caches
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             /mnt/cw/openwrt/dl
@@ -218,7 +224,7 @@ jobs:
 
       - name: Upload toolchain cache
         if: success() && steps.tc.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: |
             /mnt/cw/openwrt/staging_dir/host
@@ -264,6 +270,16 @@ jobs:
           docker run --rm -v /mnt/cw/openwrt:/build -v "$PWD":/cleanwrt cleanwrt-builder \
             /cleanwrt/tools/cw-publish-feed.sh /build --out /cleanwrt/feed-out
           tar -C feed-out -czf dist/cw-opt-feed.tar.gz .
+
+      # The verified feed for the feed workflow's publish job. Public like the feed it becomes.
+      - name: Upload the cw-opt feed
+        if: success() && inputs.opt_artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: cw-opt-feed
+          path: feed-out/
+          retention-days: 3
+          if-no-files-found: error
 
       # The draft is the holding area: private, kept until deleted, and what the release
       # workflow publishes. Each build of a version refreshes it; a published release is never
@@ -337,17 +353,9 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           echo "draft $tag: $(gh release view "$tag" --json url -q .url)"
 
-      - name: Upload build files
-        if: success() && inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cleanwrt-${{ steps.ver.outputs.version }}
-          path: dist/
-          retention-days: 30
-
       - name: Upload build log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-log
           path: /mnt/cw/build.log

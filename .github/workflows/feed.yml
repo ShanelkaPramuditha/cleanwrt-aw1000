@@ -1,0 +1,98 @@
+name: feed
+
+# The cw-opt apk feed: what routers install on demand and the official OpenWrt repositories do
+# not carry - qBittorrent with its Qt6 stack, and the Syncthing switch (luci-app-syncthing).
+# The image lists this feed (files/etc/apk/repositories.d/cw-opt.list) but carries none of it.
+#
+# Run it once before the first image build that lists the feed (the build refuses a draft
+# while the feed does not answer), and again whenever one of those packages changes or the
+# OpenWrt base moves. A normal release does not need it: the image build stays short.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: feed
+  cancel-in-progress: false
+
+jobs:
+  # The packages are signed with the key routers trust; without it the feed would be signed
+  # with a throw-away key and every install would fail. Checked before the long build.
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: The package signing key
+        env:
+          HAVE_APK: ${{ secrets.APK_PRIVATE_KEY != '' }}
+        run: |
+          [ "$HAVE_APK" = true ] || { echo "::error::the feed needs the APK_PRIVATE_KEY secret"; exit 1; }
+
+  # The full build with the opt-in set: the image is built too (the install check resolves the
+  # feed against the image's own package database), then the feed set is compiled, indexed,
+  # signed and verified by tools/cw-publish-feed.sh, and uploaded as the cw-opt-feed artifact.
+  build:
+    needs: checks
+    permissions:
+      contents: write   # the called job's own permission; it creates no release here (draft off)
+    uses: ./.github/workflows/build.yml
+    with:
+      opt_artifacts: true
+      draft: false
+    secrets: inherit
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write   # push the feed to gh-pages
+    # one group for everything that writes gh-pages (docs.yml uses it too)
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: cw-opt-feed
+          path: feed-new
+
+      - name: The feed is whole
+        run: |
+          set -eu
+          [ -s feed-new/packages.adb ] || { echo "::error::the artifact has no packages.adb"; exit 1; }
+          for p in qbittorrent luci-app-qbittorrent luci-app-syncthing; do
+            ls feed-new | grep -q "^$p-[0-9]" || { echo "::error::$p is not in the feed"; exit 1; }
+          done
+          echo "$(ls feed-new/*.apk | wc -l) packages, $(du -sh feed-new | cut -f1)"
+
+      # feed/ is replaced as a whole: an index and the packages it names always arrive together.
+      # The previous feed stays in the gh-pages history, so a bad publish can be reverted.
+      - name: Publish to gh-pages under feed/
+        run: |
+          set -eu
+          sh tools/cw-gh-pages.sh prepare ../site
+          mkdir -p ../site/feed
+          rsync -a --delete feed-new/ ../site/feed/
+          touch ../site/.nojekyll
+          sh tools/cw-gh-pages.sh commit ../site "Feed: cw-opt from $GITHUB_SHA"
+          sh tools/cw-gh-pages.sh done ../site
+
+      # GitHub Pages serves the new commit after its own deploy; wait for the index to answer
+      # so the next image build's feed check passes.
+      - name: The feed answers
+        run: |
+          set -eu
+          url=$(grep -v '^#' files/etc/apk/repositories.d/cw-opt.list | grep -m1 .)
+          for i in $(seq 1 30); do
+            if curl -sSfI --max-time 20 "$url" > /dev/null; then
+              echo "feed live: $url" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::warning::$url does not answer yet; GitHub Pages may still be deploying"

@@ -1,6 +1,6 @@
 ---
 title: "Remote access to a 5G CGNAT router"
-description: "Reach your AW1000 and your LAN behind 5G CGNAT with Tailscale, Cloudflare Tunnel or WireGuard. Everything ships disabled until you turn it on."
+description: "Reach your AW1000 and your LAN behind 5G CGNAT with Tailscale, Cloudflare Tunnel or WireGuard: how to install and set up each one."
 updated: 2026-11-06
 ---
 
@@ -14,9 +14,11 @@ LAN from outside, pick **one** of these. All of them ship **disabled**; enable o
 
 ## Tailscale
 
-A mesh VPN, and the easiest option.
+A mesh VPN, and the easiest option. It is not in the image (it is a large program); install it
+from the official OpenWrt repositories first:
 
 ```sh
+apk update && apk add tailscale luci-app-tailscale-community
 /etc/init.d/tailscale enable && /etc/init.d/tailscale start
 tailscale up        # prints a login URL; open it to authenticate
 ```
@@ -25,7 +27,8 @@ The LuCI page is *Services → Tailscale*.
 
 ## Cloudflare Tunnel
 
-Exposes a service through your Cloudflare account, with no public IP needed.
+Exposes a service through your Cloudflare account, with no public IP needed. Install it first,
+from the official OpenWrt repositories: `apk update && apk add cloudflared luci-app-cloudflared`.
 
 *Services → Cloudflare Zero Trust Tunnel → Configuration*: paste your tunnel token and enable.
 
@@ -49,7 +52,7 @@ You can also run your own WireGuard server on the router. See [VPN and proxies](
 ## Common questions
 
 ??? question "How can I reach my router behind 5G CGNAT?"
-    5G gives you a carrier-grade NAT address, so port forwarding does not work. Use Tailscale, a Cloudflare Tunnel or a WireGuard server you run yourself. All of them ship disabled.
+    5G gives you a carrier-grade NAT address, so port forwarding does not work. Use Tailscale, a Cloudflare Tunnel or a WireGuard server you run yourself. WireGuard is in the image; Tailscale and Cloudflare Tunnel are one `apk add` away.
 
 ??? question "Should I use Tailscale or Cloudflare Tunnel on the AW1000?"
     Tailscale is the easiest way to reach the whole LAN from your own devices. A Cloudflare Tunnel is better for publishing one web service under your own domain.
@@ -61,8 +64,8 @@ You can also run your own WireGuard server on the router. See [VPN and proxies](
 
 | | state | what it needs |
 |---|---|---|
-| Tailscale | installed, **off** | your login. `luci-app-tailscale-community` |
-| Cloudflare Tunnel | installed, **off** | your tunnel token. `cloudflared` plus its page |
+| Tailscale | **not in the image**: `apk add tailscale luci-app-tailscale-community` | your login |
+| Cloudflare Tunnel | **not in the image**: `apk add cloudflared luci-app-cloudflared` | your tunnel token |
 | WireGuard | kernel module and tools, no tunnel | a peer config from wherever you keep one |
 | OpenVPN | installed, **off** | your `.ovpn` file |
 | SSH (`dropbear`) | on, with password authentication and root password authentication enabled, and **no root password set** | set a password before you use it from anywhere |

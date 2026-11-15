@@ -77,7 +77,7 @@ install brings back the version the image ships.
 | OpenVPN | installed, off, needs your `.ovpn` |
 | Nikki | installed, **off**. Its core is `mihomo-meta` (stable); the Zashboard dashboard is preinstalled. First boot moves its HTTP proxy port from 8080 (taken) to **7893** and sets a random dashboard secret and proxy password |
 | HomeProxy, Passwall, Passwall 2, OpenClash | **not in the image**. OpenClash is no longer built either: Nikki runs the same Clash profiles |
-| Tailscale, Cloudflare Tunnel | installed, off. They belong on [remote access](remote-access.md) |
+| Tailscale, Cloudflare Tunnel | **not in the image**, one `apk add` away. See [remote access](remote-access.md) |
 
 ## What is listening
 

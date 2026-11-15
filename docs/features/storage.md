@@ -1,6 +1,6 @@
 ---
 title: "USB storage, Samba, DLNA and torrents on OpenWrt"
-description: "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in."
+description: "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, a DLNA media server, and qBittorrent or Syncthing one install away, all opt-in."
 updated: 2026-11-06
 ---
 
@@ -20,8 +20,10 @@ FAT32, exFAT, NTFS, btrfs), and shows disk health (SMART, including USB-NVMe enc
 
 ## NAS services (all opt-in)
 
-Everything below ships **installed but disabled** and is pointed at the USB drive. Nothing
-listens on the LAN until you enable it. **Set credentials before you enable each service.**
+Everything below is pointed at the USB drive and stays off until you enable it; nothing listens
+on the LAN before that. qBittorrent and Syncthing are not in the image: install them first
+(`apk update && apk add qbittorrent luci-app-qbittorrent` or `apk add syncthing luci-app-syncthing`,
+see [web apps](web-apps.md)). **Set credentials before you enable each service.**
 
 | Service | Where | Notes |
 |---|---|---|
@@ -58,7 +60,7 @@ it does not re-scan on every reboot.
 ## Common questions
 
 ??? question "Can I use a USB drive as a NAS on the Arcadyan AW1000?"
-    Yes. A drive auto-mounts under `/mnt` (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them.
+    Yes. A drive auto-mounts under `/mnt` (ext4, FAT, exFAT and NTFS), and you can share it with SMB and DLNA from the image, and with Syncthing and qBittorrent after one `apk add` each. All of them stay off until you enable them, so set credentials first.
 
 ??? question "Can the AW1000 stream media to a smart TV?"
     Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there.
@@ -73,8 +75,8 @@ it does not re-scan on every reboot.
 | `block-mount` | on, `anon_mount='1'`, `auto_mount='1'`, `delay_root='5'`, `check_fs='0'` | a drive plugged in appears under `/mnt` within seconds, with no swap taken and no filesystem check at boot |
 | Samba | **the daemon starts** | there is one share, `USB` → `/mnt`, writable, with `guest_ok='no'` — so nothing is reachable until you add users. The package's init script has no `enabled` switch, which is why the daemon is running |
 | miniDLNA | **off** (`enabled='0'`) | when on: port 8200 on `br-lan`, media from `/mnt`, database in `/var/run/minidlna`, name `CleanWRT` |
-| Syncthing | **off** | when on, its own interface on `0.0.0.0:8384` and its config in `/etc/syncthing` |
-| qBittorrent | **off** | downloads default to the first USB drive |
+| Syncthing | **not in the image**; off once installed | when on, its own interface on `0.0.0.0:8384` and its config in `/etc/syncthing` (the image ships that config, so an install keeps it) |
+| qBittorrent | **not in the image**; off once installed | downloads default to the first USB drive |
 | p910nd (printer share) | **not in the image** | `apk add p910nd luci-app-p910nd` if you need it |
 | `hd-idle` | **off** | spin-down for a USB hard disk |
 | `smartd` | **not in the image** | deliberately |

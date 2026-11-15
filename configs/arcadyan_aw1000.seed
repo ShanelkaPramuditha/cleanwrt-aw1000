@@ -384,22 +384,22 @@ CONFIG_PACKAGE_luci-app-minidlna=y
 # auto-mounted USB storage (/mnt); set the service's credentials before enabling.
 #   samba4    = SMB/CIFS file sharing of /mnt (Windows/macOS/Linux). userspace,
 #               max client compatibility (the router has RAM headroom for it).
-#   qBittorrent = torrent/download client (qbittorrent-nox headless, WebUI
-#               on :8080), part of the image (the Qt6 stack adds ~25 MiB; the
-#               image therefore needs the expanded MTD layout).
-#               Ships off; the LuCI Enable box is the switch.
-#   transmission = NOT in the default build (redundant with qBittorrent;
-#               install it from the official packages feed if you prefer its
-#               UI - `apk add transmission-daemon transmission-web luci-app-transmission`).
+#   qBittorrent = NOT in the image: torrent/download client (qbittorrent-nox headless,
+#               WebUI on :8080). Its Qt6 stack is ~25 MiB, so it is an install from this
+#               project's cw-opt feed: `apk add qbittorrent luci-app-qbittorrent`
+#               (built and published by the `feed` workflow).
+#   transmission = NOT in the default build either; install it from the official packages
+#               feed if you prefer its UI - `apk add transmission-daemon transmission-web luci-app-transmission`.
 #   filemanager  = full-featured web file manager (browse/edit/upload + hex
 #                  editor). luci-app-filebrowser is a cramped FileUpload widget;
 #                  luci-app-filemanager is a proper full-page manager.
-#   syncthing = P2P folder sync (phone/PC <-> /mnt) - own web UI :8384; the
-#               LuCI switch is luci-app-syncthing.
+#   syncthing = NOT in the image: P2P folder sync (phone/PC <-> /mnt), own web UI :8384.
+#               `apk add syncthing` (official packages feed) and `luci-app-syncthing`
+#               (the LuCI switch, original CleanWRT code, from the cw-opt feed).
+#               files/etc/config/syncthing stays in the image: an install keeps it,
+#               so the service still arrives off and pointed at /mnt.
 #   p910nd    = NOT in the build (the USB printer share): `apk add p910nd luci-app-p910nd`.
 CONFIG_PACKAGE_samba4-server=y
-CONFIG_PACKAGE_qbittorrent=y
-CONFIG_PACKAGE_luci-app-qbittorrent=y
 CONFIG_PACKAGE_luci-app-samba4=y
 # hd-idle - USB HDD spindown timer (NAS users). Ships DISABLED; enable in
 # LuCI -> Services -> HDD idle and set the spindown time. No listening
@@ -415,9 +415,6 @@ CONFIG_PACKAGE_luci-app-hd-idle=y
 # stay with LuCI -> System -> Mount Points.
 CONFIG_PACKAGE_luci-app-diskman=y
 CONFIG_PACKAGE_luci-app-filemanager=y
-CONFIG_PACKAGE_syncthing=y
-# luci-app-syncthing: the LuCI on/off switch (cwfeed, original CleanWRT code)
-CONFIG_PACKAGE_luci-app-syncthing=y
 
 # ── Performance ──────────────────────────────────────────────────────────────
 # irqbalance spreads modem/wifi/ethernet IRQs across the 4 cores (throughput).
@@ -437,14 +434,15 @@ CONFIG_PACKAGE_vnstat2=y
 CONFIG_PACKAGE_luci-app-vnstat2=y
 
 # ── CGNAT-busting remote access (5G hands out a CGNAT IP - no port-forward) ───
-# tailscale = mesh VPN (reach the LAN from anywhere) - LuCI UI + CLI `tailscale up`.
-# cloudflared = Cloudflare Tunnel (expose a service, no public IP) - LuCI UI.
-# (frpc/pbr intentionally NOT shipped - frpc's own-VPS tunnel is covered by
-# tailscale+cloudflared; policy-routing is not core to this build.)
-CONFIG_PACKAGE_tailscale=y
-CONFIG_PACKAGE_luci-app-tailscale-community=y
-CONFIG_PACKAGE_cloudflared=y
-CONFIG_PACKAGE_luci-app-cloudflared=y
+# NOT in the image: both are large Go binaries (about 10 MiB each in the image), and the
+# official 25.12.5 repositories carry them with their LuCI pages, so an install is one line:
+#   tailscale   = mesh VPN (reach the LAN from anywhere):
+#                 `apk add tailscale luci-app-tailscale-community`
+#   cloudflared = Cloudflare Tunnel (expose a service, no public IP):
+#                 `apk add cloudflared luci-app-cloudflared`
+# files/usr/share/luci/menu.d/zz-cw-tools.json keeps Cloudflare's menu under Services; it is
+# hidden until luci-app-cloudflared is installed.
+# (frpc/pbr intentionally NOT shipped either.)
 
 # ── Watchcat ─────────────────────────────────────
 # Connectivity watchdog (reboot / restart interface / run script). Ships with NO

@@ -7,8 +7,8 @@
 # with the official entries only, so package management works from first boot.
 #
 # The community packages (QModem, 3ginfo-lite, ...) are bundled in the image at
-# the pinned commits. The CleanWRT package index is the separate, disabled
-# cw-opt.list.disabled in this directory.
+# the pinned commits. The CleanWRT package index (qBittorrent, the Syncthing switch) is
+# the separate cw-opt.list in this directory.
 #
 # These URLs are valid for OpenWrt v25.12.5 exactly (the release script hard-gates the
 # tree at this tag). When bumping OPENWRT_TAG, regenerate:

@@ -14,11 +14,9 @@
 # release re-runs it against the new package database, so the pins always match the
 # running image and an old pin can never demand a downgrade.
 #
-# qbittorrent is part of the image but comes from the cwfeed, not the
-# luci feed, so it is written as a bare name and stays upgradable (apk upgrade from
-# the cw-opt feed). Packages installed after first boot (e.g. mwan3) are added to
-# world without a pin by `apk add` and stay upgradable by design: none carries
-# build-time patches.
+# Packages installed after first boot (e.g. mwan3, or qbittorrent and luci-app-syncthing
+# from the cw-opt feed) are added to world without a pin by `apk add` and stay
+# upgradable by design: none carries build-time patches.
 
 [ -f /lib/apk/db/installed ] || exit 0
 [ -d /etc/apk ] || exit 0

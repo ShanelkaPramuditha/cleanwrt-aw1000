@@ -23,7 +23,7 @@
 #   3. the index is signed with the tree key and verifies against the key shipped in
 #      the image (files/etc/apk/keys/public-key.pem)
 #   4. qbittorrent in the set == PKG_VERSION-r<PKG_RELEASE> of feeds-src/cwfeed
-#      (no stale release) and its luci app is in the set
+#      (no stale release), and its luci app and luci-app-syncthing are in the set
 #   5. the device solver (apk add --simulate against the official repos + the new
 #      index) resolves the opt set completely
 set -eu
@@ -97,6 +97,7 @@ want="qbittorrent-$ver-r$rel.apk"
 n=$(ls "$W/feed" | grep -c '^qbittorrent-[0-9]')
 [ "$n" = 1 ] || fail "$n qbittorrent apks in the set (want exactly $want)"
 ls "$W/feed" | grep -q '^luci-app-qbittorrent-[0-9]' || fail "luci-app-qbittorrent missing from the set"
+ls "$W/feed" | grep -q '^luci-app-syncthing-[0-9]' || fail "luci-app-syncthing missing from the set"
 echo "qbittorrent: $want (matches PKG_RELEASE $rel)"
 
 # 5. device solver: official repos + the new index must resolve the opt set
@@ -105,7 +106,7 @@ root=$(ls -d "$TREE"/build_dir/target-*/root-*/ 2>/dev/null | head -1)
 cp -a "$root" "$W/root"
 { sed 's/^#.*//;/^$/d' "$REPO"/files/etc/apk/repositories.d/distfeeds.list
   printf 'file://%s/packages.adb\n' "$W/feed"; } > "$W/root/etc/apk/repositories"
-out=$("$APK" --arch "$ARCH" --no-cache --root "$W/root" --allow-untrusted add -s qbittorrent luci-app-qbittorrent 2>&1) || {
+out=$("$APK" --arch "$ARCH" --no-cache --root "$W/root" --allow-untrusted add -s qbittorrent luci-app-qbittorrent luci-app-syncthing 2>&1) || {
     printf '%s\n' "$out" | tail -8 >&2; fail "the opt set does not resolve against the official repos + the new index"; }
 echo "solver: the opt set resolves ($(printf '%s\n' "$out" | tail -1))"
 

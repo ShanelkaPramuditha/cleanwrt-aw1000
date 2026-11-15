@@ -24,6 +24,12 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 - **Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock are gone.** Their feeds, packages,
   cores (xray-core, sing-box, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others)
   and first-boot files are no longer in the image; Nikki is the proxy app.
+- **A smaller image: four apps are one install away.** Tailscale, Cloudflare Tunnel, Syncthing
+  and qBittorrent (with its Qt6 stack) are no longer built in. Tailscale, Cloudflare and Syncthing
+  install from the official OpenWrt repositories; qBittorrent and the Syncthing switch come from
+  this project's own signed feed, `cw-opt`, which every router now lists. One line each, see
+  [what is included](included.md#one-install-away). A keep-settings upgrade removes the apps from
+  a router that had them, and keeps their settings for a reinstall.
 - **Night mode can switch off the Phone LED.** *System → LED Management → Night mode* lists
   **Phone** under *Keep on during night*; untick it and the phone lamp stays dark inside the night
   window while the phone keeps working. It is ticked by default, so nothing changes until you

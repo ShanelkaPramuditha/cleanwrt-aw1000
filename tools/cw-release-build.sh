@@ -523,8 +523,8 @@ fi
 for p in luci luci-mod-admin-full luci-theme-bootstrap luci-theme-footstrap \
          libiwinfo rpcd-mod-iwinfo \
          luci-app-qmodem qmodem kmod-qmi_wwan_q qmodem-sipd \
-         minidlna samba4-server syncthing \
-         luci-app-qmodem-ttlfw4 luci-app-tailscale-community luci-app-cw-led \
+         minidlna samba4-server \
+         luci-app-qmodem-ttlfw4 luci-app-cw-led \
          luci-app-3ginfo-lite nikki luci-app-nikki nikki-zashboard bash ttyd ; do
     grep -qx "CONFIG_PACKAGE_${p}=y" "$SEED" || continue   # not selected by this seed
     grep -qx "CONFIG_PACKAGE_${p}=y" .config || { echo "ERROR: ${p} dropped from .config" >&2; exit 1; }
@@ -612,23 +612,26 @@ if [ "$rc" -ne 0 ]; then
     fi
 fi
 
-# 6b. Opt-in artifacts for the cw-opt binary feed: qBittorrent is part of the
-#     image (the seed selects it), and this pass compiles it again together with
-#     its dependency closure so bin/packages/aarch64_cortex-a53/ becomes a
-#     ready-to-publish signed apk repository that routers can upgrade it from. Publishing that directory (tools/cw-publish-feed.sh) must happen
-#     before an image carrying cw-opt.list is flashed anywhere: a dead feed entry
-#     breaks apk update. The first build compiles qt6base: budget +1-2 h.
+# 6b. Opt-in artifacts for the cw-opt binary feed: what routers install on demand and the
+#     official repositories do not carry - qBittorrent with its Qt6 stack, and the Syncthing
+#     switch (luci-app-syncthing, cwfeed). Neither is in the image; this pass compiles them
+#     with their dependency closure so bin/packages/aarch64_cortex-a53/ becomes a
+#     ready-to-publish signed apk repository (tools/cw-publish-feed.sh, the `feed` workflow).
+#     The image lists that feed (cw-opt.list), so it must be published before an image is
+#     built: the build workflow refuses to build while it does not answer. The first build
+#     compiles qt6base: budget +1-2 h.
+CW_OPT_SET="qbittorrent luci-app-qbittorrent luci-app-syncthing"
 if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
-    echo "== opt-in artifacts: compiling the qBittorrent stack =="
+    echo "== opt-in artifacts: compiling $CW_OPT_SET =="
     cp .config .config.cw-image
-    cfg_enable 'CONFIG_PACKAGE_qbittorrent=y'
-    cfg_enable 'CONFIG_PACKAGE_luci-app-qbittorrent=y'
+    for p in $CW_OPT_SET; do cfg_enable "CONFIG_PACKAGE_$p=y"; done
     # Runtime deps (libtorrent-rasterbar, krb5-libs…) are pulled into the same
     # published set by the closure loop below - the official release repos do NOT
     # carry them.
     make defconfig >/dev/null
     disable_broken_toggles
-    if make package/qbittorrent/compile package/luci-app-qbittorrent/compile; then
+    # shellcheck disable=SC2046
+    if make $(for p in $CW_OPT_SET; do printf 'package/%s/compile ' "$p"; done); then
         # An apk directory compiled outside the world build gets no signed index. `make package/index` merges every bin/packages/ dir into
         # one flat signed repository (staging_dir/packages/qualcommax/),
         # packages.adb signed with the tree's openssl apk key (private-key.pem -
@@ -648,13 +651,15 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
         if [ -x "$APKBIN" ]; then
             solve_root=$(mktemp -d)
             cp -a build_dir/target-*/root-*/ "$solve_root"/root
-            { sed 's/^#.*//;/^$/d' "$REPO/files/etc/apk/repositories.d/"*.list
+            # the official repositories only: cw-opt.list names the published feed, which this
+            # build is about to replace (and which does not exist before its first publish)
+            { sed 's/^#.*//;/^$/d' "$REPO/files/etc/apk/repositories.d/distfeeds.list"
               printf 'file://%s/staging_dir/packages/qualcommax/packages.adb\n' "$PWD"
             } > "$solve_root"/root/etc/apk/repositories
             for iter in 1 2 3 4 5 6 7 8; do
                 unresolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent 2>&1 \
+                    add -s $CW_OPT_SET 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._-]+ \(no such package\)' | sed 's/ (no such package)//' )
                 unresolved=$(echo "$unresolved" | tr '\n' ' ' | sed 's/ *$//')
                 [ -z "$unresolved" ] && break
@@ -675,12 +680,12 @@ if [ "${CW_BUILD_OPT_ARTIFACTS:-1}" = "1" ]; then
                 # surviving feeds' outputs.
                 resolved=$("$APKBIN" --arch aarch64_cortex-a53 --no-cache \
                     --root "$solve_root"/root --allow-untrusted \
-                    add -s qbittorrent luci-app-qbittorrent 2>&1 \
+                    add -s $CW_OPT_SET 2>&1 \
                     | grep -oE '^  [a-zA-Z0-9._~-]+-[0-9][^([ ]*' | sed 's/^  *//; s/\[.*$//' | sort -u)
                 stale=""
                 for tok in $resolved; do
                     case "$tok" in
-                        qbittorrent-*|luci-app-qbittorrent-*) ;;
+                        qbittorrent-*|luci-app-qbittorrent-*|luci-app-syncthing-*) ;;
                         *) continue ;;
                     esac
                     [ -n "$(find bin/packages/aarch64_cortex-a53 -name "$tok.apk" -print -quit)" ] || stale="$stale $tok"

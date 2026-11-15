@@ -48,8 +48,8 @@ No re-flash is needed.
 | Service | Reach | Advice |
 |---|---|---|
 | File sharing (SMB) | LAN | guest access is off; create users first |
-| qBittorrent web UI (`:8080`) | LAN | the first start prints a temporary password to the log; set your own |
-| Syncthing GUI (`:8384`) | LAN | set a GUI user and password before pairing |
+| qBittorrent web UI (`:8080`), once installed | LAN | the first start prints a temporary password to the log; set your own |
+| Syncthing GUI (`:8384`), once installed | LAN | set a GUI user and password before pairing |
 | miniDLNA (`:8200`) | LAN only | no login; do not expose it |
 
 ## Reporting a problem

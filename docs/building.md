@@ -38,15 +38,17 @@ The build needs nothing but the repository.
 | `check` | every push and pull request | shell syntax, the version label, that the pins resolve, and a **config check**: feeds, patches, pins, defconfig and the seed checks, without compiling |
 | `build` | by hand (*Actions → build → Run workflow*) | builds the image in the Docker environment, with a download cache and a compiler cache, and puts it in the private draft release |
 | `release` | by hand (*Actions → release → Run workflow*) | publishes the draft release as it is. It builds nothing |
+| `feed` | by hand (*Actions → feed → Run workflow*) | builds and publishes the `cw-opt` package feed (qBittorrent, the Syncthing switch) to the site. Needed before the first image that lists the feed, then only when those packages or the OpenWrt base change ([extra packages](extra-packages.md#the-cleanwrt-feed-cw-opt)) |
 
 The inputs of a manual build:
 
 | Input | Default | Meaning |
 |---|---|---|
-| `clean` | off | rebuild every package |
-| `opt_artifacts` | off | also compile and verify the optional `cw-opt` feed |
-| `artifacts` | off | upload the images as a workflow artifact (public for a public repository) |
-| `draft` | on | put the images in the private draft release `v<CW_VERSION>`. Needs the signing secrets |
+| `draft` | on | put the images in the private draft release `v<CW_VERSION>`. Needs the signing secrets and a live `cw-opt` feed. Untick it for a test build that publishes nothing |
+
+That is the only choice. A clean rebuild is not offered because every run starts from a freshly
+cloned tree anyway; the feed is compiled by the `feed` workflow; and images are never uploaded as
+a workflow artifact, which anyone signed in to GitHub could download, while a draft stays private.
 
 A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.
@@ -73,8 +75,9 @@ The checks along the way:
 |---|---|---|
 | the `USIGN_KEY_BUILD`, `USIGN_KEY_BUILD_PUB` and `APK_PRIVATE_KEY` secrets are set | before the build | a release image carries the project's signature, which a router with `ucert` installed verifies before it flashes, and a throw-away package key signs packages no router trusts |
 | `docs/changelog.md` has a `## <CW_VERSION>` section | before the build | that section becomes the release notes |
+| the `cw-opt` feed the image lists answers | before the build | a dead feed entry breaks `apk update` on every router: run the `feed` workflow first |
 | the version is not published yet, and no tag of it sits on another commit | before the build | a published release is never rewritten |
-| the package key is the one routers trust (`tools/cw-check-release-keys.sh`) | inside the build | the same check `opt_artifacts` runs |
+| the package key is the one routers trust (`tools/cw-check-release-keys.sh`) | inside the build | the same check the `feed` workflow runs before it signs the feed |
 | the sysupgrade image carries a valid signature by the release key | before the draft upload | the same verification the router runs before it flashes |
 | the draft was built from a commit on `main` that carries this `CW_VERSION` | before publishing | an old or stray draft is never published |
 | every file is in the draft and matches `sha256sums.cw` | before publishing | what goes public is what the build produced |
@@ -140,7 +143,7 @@ before, so nothing on the device changes.
 On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
 `USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. A build that puts its images in the draft release
 refuses to start without them, so every release is signed. A local build without the keys makes
-unsigned images, and the `cw-opt` feed stays disabled.
+unsigned images, and a feed built with a throw-away key that no router trusts.
 
 On OpenWrt 25.12 the buildroot no longer makes the certificate an image signature needs
 (`key-build.ucert`; it did so only for opkg builds), so `tools/cw-release-build.sh` makes it from the

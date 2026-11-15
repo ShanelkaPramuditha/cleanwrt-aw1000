@@ -24,15 +24,11 @@ switch.
 | Nikki | Services → Nikki | Off (add a Clash profile) | mihomo transparent proxy with the Zashboard dashboard ([VPN and proxies](features/vpn-proxy.md#nikki)) |
 | WireGuard | Network → Interfaces | needs a tunnel from you | VPN protocol support |
 | OpenVPN | VPN → OpenVPN | Off (needs your .ovpn file) | VPN client and server |
-| Tailscale | Services → Tailscale | needs your login | mesh VPN |
-| Cloudflare Zero Trust Tunnel | Services → Cloudflare Zero Trust Tunnel | Off | publish a service without a public IP |
 | Watchcat | Tools → Watchcat | **no rule at all**, deliberately | reboot or restart an interface when the connection is lost. The package default would reboot a router on its own; this image ships it empty |
 | Disk Manager | Services → Disk Manager | On | partition and format USB drives |
 | HDD Idle | Tools → HDD Idle | Off | spin down a USB hard disk |
 | Network Shares (Samba) | Network → Filesystem Share | the daemon starts; the share allows no guest access | Windows / macOS / Linux file sharing, one share of `/mnt` |
 | miniDLNA | Services → miniDLNA | Off | media server for TVs and players |
-| Syncthing | Services → Syncthing | Off | folder sync with your phone and PC ([web apps](features/web-apps.md)) |
-| qBittorrent | Services → qBittorrent | Off | download client with its own web interface ([web apps](features/web-apps.md)) |
 | File Manager | Tools → File Manager | On | browse and edit router files |
 | Bandwidth Monitor | Tools → Bandwidth Monitor | On | traffic per device |
 | vnStat | Statistics → vnStat | On | traffic history, monthly totals |
@@ -42,6 +38,22 @@ switch.
 | LED Management | System → LED Management | On | front-panel LEDs ([LEDs](leds.md)) |
 | New-version notice | Status → Overview | On | tells you when a newer CleanWRT is published ([releases](releases.md#the-new-version-notice)) |
 | Quiet hours, recordings, the answering machine | inside AWvoice → Rules and Phone settings | all **off** until you write them | [quiet hours](awvoice/quiet-hours.md), [recordings and the machine](awvoice/recordings-and-machine.md) |
+
+## One install away
+
+Left out of the image to keep it small, and installed with one line when you want them. Each
+arrives switched off.
+
+| App | Install | What it does |
+|---|---|---|
+| Tailscale | `apk add tailscale luci-app-tailscale-community` | mesh VPN ([remote access](features/remote-access.md)) |
+| Cloudflare Zero Trust Tunnel | `apk add cloudflared luci-app-cloudflared` | publish a service without a public IP ([remote access](features/remote-access.md)) |
+| Syncthing | `apk add syncthing luci-app-syncthing` | folder sync with your phone and PC ([web apps](features/web-apps.md)) |
+| qBittorrent | `apk add qbittorrent luci-app-qbittorrent` | download client with its own web interface ([web apps](features/web-apps.md)) |
+
+Run `apk update` first. Tailscale, Cloudflare and `syncthing` come from the official OpenWrt
+repositories; `luci-app-syncthing` and qBittorrent come from this project's signed `cw-opt` feed,
+which the image already lists ([extra packages](extra-packages.md)).
 
 ## Core and system
 
@@ -69,8 +81,8 @@ image's thirteen first-boot scripts, and both are listed in
 
 ## Need something else?
 
-The official OpenWrt package repositories are enabled, so `apk add <name>` works (for example
-`apk add mwan3 luci-app-mwan3`). Packages you add yourself are yours to manage. See
+The official OpenWrt package repositories and this project's `cw-opt` feed are enabled, so
+`apk add <name>` works (for example `apk add mwan3 luci-app-mwan3`). Packages you add yourself are yours to manage. See
 [Extra packages](extra-packages.md).
 
 ## IPv6 and proxies

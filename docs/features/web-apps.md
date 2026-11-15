@@ -7,7 +7,18 @@ updated: 2026-11-14
 # Apps with their own web interface
 
 Some apps are configured in their own dashboard, opened in the browser, and not inside LuCI. The
-two below are installed with the firmware. The examples assume the router is at `192.168.1.1`.
+two below are **not in the image**, to keep it small: each is one install away. The examples assume
+the router is at `192.168.1.1`.
+
+```sh
+apk update
+apk add syncthing luci-app-syncthing          # Syncthing, and its switch in LuCI
+apk add qbittorrent luci-app-qbittorrent      # qBittorrent with its LuCI page
+```
+
+`syncthing` comes from the official OpenWrt repositories. `luci-app-syncthing`, `qbittorrent` and
+`luci-app-qbittorrent` come from this project's own signed feed, `cw-opt`, which the image already
+lists ([extra packages](../extra-packages.md)). Both apps arrive switched off.
 
 ## Start and stop an app
 
@@ -48,8 +59,8 @@ The default download folder is on the USB drive (`/mnt`); attach and mount it fi
 
 | app | state | its own interface | first thing to set |
 |---|---|---|---|
-| Syncthing | **off** | `http://0.0.0.0:8384` | a password. The interface binds all addresses as shipped |
-| qBittorrent | **off** | its own web UI | the download directory. It defaults to the first USB drive |
+| Syncthing | not installed; **off** once installed | `http://0.0.0.0:8384` | a password. The interface binds all addresses as shipped |
+| qBittorrent | not installed; **off** once installed | its own web UI | the download directory. It defaults to the first USB drive |
 
 ## What is listening
 
@@ -67,5 +78,5 @@ Nothing until you enable an app. Each one's port and address are in
 ## Questions people ask
 
 ??? question "Which apps have their own web page on CleanWRT?"
-    Syncthing and qBittorrent. Each is installed and switched off, and each listens on
-    its own port only after you enable it.
+    Syncthing and qBittorrent. Neither is in the image; each installs with one `apk add`, arrives
+    switched off, and listens on its own port only after you enable it.
