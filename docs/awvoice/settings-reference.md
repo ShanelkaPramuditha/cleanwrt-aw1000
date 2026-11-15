@@ -111,7 +111,7 @@ why an option that is absent from your file is not a bug.
 | `mode` | `web`, `interop`, `baresip` | `web` | whether a phone on your own network may join the line. Saving also starts or stops that service. An unknown word is refused and the previous value stays |
 
 The service's own settings — account, port, direction, provider — are in a different package,
-`/etc/config/qmodem_sip`, listed in [UCI options](../reference/options.md#qmodem_sip--the-service-a-network-phone-uses).
+`/etc/config/qmodem_sip`, listed in [UCI options](../reference/options.md#qmodem_sip-the-service-a-network-phone-uses).
 
 ## Lists and records
 

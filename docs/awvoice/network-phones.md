@@ -61,7 +61,7 @@ does not store its secrets. The relationship is exactly two things:
 
 The AWvoice page reads that file's settings back and shows them, and it is the only place you can
 change them without a shell. The values this image ships are in
-[UCI options](../reference/options.md#qmodem_sip--the-service-a-network-phone-uses).
+[UCI options](../reference/options.md#qmodem_sip-the-service-a-network-phone-uses).
 
 ### Calls coming in
 

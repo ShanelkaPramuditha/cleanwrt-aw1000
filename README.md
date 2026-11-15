@@ -197,6 +197,7 @@ package feed.
 | The p910nd printer share and the unused OHCI USB driver removed | `configs/arcadyan_aw1000.seed`, `files/`, `patches/feeds/luci/`, `docs/` |
 | Every release carries the image signing public key | `.github/workflows/` |
 | A smaller image: Tailscale, Cloudflare Tunnel, Syncthing and qBittorrent are one `apk add` away; the project's signed cw-opt feed (qBittorrent, the Syncthing switch) is published by a new `feed` workflow and listed on every router | `configs/`, `tools/`, `files/etc/`, `.github/workflows/`, `docs/` |
+| A step-by-step guide to installing the optional apps (AdGuard Home included), qBittorrent's web UI on 8081 (8080 is the provisioning listener's), and AdGuard Home and printer settings kept across upgrades, with DNS returned to dnsmasq while AdGuard Home is not installed | `docs/install-apps.md`, `files/etc/config/qbittorrent`, `files/etc/uci-defaults/53-cw-qbittorrent-port`, `files/etc/uci-defaults/95-cw-drop-removed-apps` |
 | Build once, publish the tested files: builds fill a private draft release (signature verified, notes from the changelog), and a separate `release` workflow publishes it without rebuilding | `.github/workflows/`, `docs/` |
 
 Everything else is upstream's work, unchanged. These changes are kept in this fork only.

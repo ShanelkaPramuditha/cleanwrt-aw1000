@@ -23,12 +23,12 @@ FAT32, exFAT, NTFS, btrfs), and shows disk health (SMART, including USB-NVMe enc
 Everything below is pointed at the USB drive and stays off until you enable it; nothing listens
 on the LAN before that. qBittorrent and Syncthing are not in the image: install them first
 (`apk update && apk add qbittorrent luci-app-qbittorrent` or `apk add syncthing luci-app-syncthing`,
-see [web apps](web-apps.md)). **Set credentials before you enable each service.**
+see [Install optional apps](../install-apps.md)). **Set credentials before you enable each service.**
 
 | Service | Where | Notes |
 |---|---|---|
 | Network file share (SMB) | *Network → Filesystem Share* | serves all of `/mnt` as `\\192.168.1.1\USB`; guest access is off |
-| Torrents (qBittorrent) | *Services → qBittorrent* | web UI on `:8080`; downloads go to `/mnt/download` |
+| Torrents (qBittorrent) | *Services → qBittorrent* | web UI on `:8081`; downloads go to `/mnt/download` |
 | Folder sync (Syncthing) | *Services → Syncthing* | web UI on `:8384` |
 | Media server (miniDLNA) | *Services → miniDLNA* | DLNA on the LAN only, port 8200 |
 | Web file manager | *Tools → File Manager* | browse, edit, upload, delete, hex editor |
@@ -77,7 +77,7 @@ it does not re-scan on every reboot.
 | miniDLNA | **off** (`enabled='0'`) | when on: port 8200 on `br-lan`, media from `/mnt`, database in `/var/run/minidlna`, name `CleanWRT` |
 | Syncthing | **not in the image**; off once installed | when on, its own interface on `0.0.0.0:8384` and its config in `/etc/syncthing` (the image ships that config, so an install keeps it) |
 | qBittorrent | **not in the image**; off once installed | downloads default to the first USB drive |
-| p910nd (printer share) | **not in the image** | `apk add p910nd luci-app-p910nd` if you need it |
+| p910nd (printer share) | **not in the image** | `apk add kmod-usb-printer p910nd luci-app-p910nd`, see [Install optional apps](../install-apps.md#printer-server-p910nd) |
 | `hd-idle` | **off** | spin-down for a USB hard disk |
 | `smartd` | **not in the image** | deliberately |
 | Transmission | **not in the image** | qBittorrent covers the same job; the package is in the official feed if you want it |
@@ -89,7 +89,7 @@ it does not re-scan on every reboot.
 | 139, 445 | Samba | **open on the LAN**, but the share refuses guest access |
 | 8384 | Syncthing's web interface | off. When enabled it binds all addresses, so set a password first |
 | 8200 | miniDLNA | off |
-| 8080 | qBittorrent's own interface | off until the app is enabled |
+| 8081 | qBittorrent's own interface | off until the app is installed and enabled |
 
 ## When it does not work
 

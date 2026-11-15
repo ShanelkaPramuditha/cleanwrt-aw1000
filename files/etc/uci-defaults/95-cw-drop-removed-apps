@@ -1,6 +1,9 @@
 #!/bin/sh
-# Clean up after apps this fork no longer ships: Passwall, Passwall 2, HomeProxy,
-# AdGuard Home, Adblock and the p910nd printer share.
+# Clean up after apps this fork no longer ships: Passwall, Passwall 2, HomeProxy and
+# Adblock. AdGuard Home and the p910nd printer share are optional installs instead
+# (docs/install-apps.md): their settings are KEPT, so installing them again after a
+# firmware upgrade brings them back as they were - and DNS is put back on dnsmasq when
+# AdGuard Home is not installed (see the end of this script).
 #
 # A keep-settings sysupgrade from an image that carried them keeps their files in
 # /etc/config, and the firewall keeps the include sections Passwall wrote for itself.
@@ -39,12 +42,25 @@ drop_fw_include() { # <init script name> <firewall section> ...
 drop_app passwall    passwall
 drop_app passwall2   passwall2
 drop_app homeproxy   homeproxy
-drop_app adguardhome adguardhome /etc/adguardhome.yaml /etc/adguardhome
 drop_app adblock     adblock
-drop_app p910nd      p910nd
 
 drop_fw_include passwall  passwall passwall_server
 drop_fw_include passwall2 passwall2 passwall2_server
 
 [ "$changed_fw" = 1 ] && uci commit firewall
+
+# DNS without AdGuard Home. Its setup moves dnsmasq off port 53 (to 54) so AdGuard Home can
+# answer there. A firmware upgrade drops the installed app but keeps that dnsmasq setting,
+# which would leave nothing on port 53: every name lookup fails, on the router and the LAN,
+# and `apk` cannot even reinstall the app. So while AdGuard Home is not installed, dnsmasq
+# goes back to 53. Its own settings stay; reinstalling it means moving dnsmasq again
+# (docs/install-apps.md, AdGuard Home step 2).
+if [ ! -x /etc/init.d/adguardhome ]; then
+	port=$(uci -q get dhcp.@dnsmasq[0].port)
+	if [ -n "$port" ] && [ "$port" != 53 ]; then
+		uci -q delete dhcp.@dnsmasq[0].port
+		uci -q commit dhcp
+		logger -t cw-firstboot "dnsmasq back on port 53 (it was on $port, and AdGuard Home is not installed)"
+	fi
+fi
 exit 0

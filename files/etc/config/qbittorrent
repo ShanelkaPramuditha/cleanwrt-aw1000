@@ -1,0 +1,8 @@
+# qBittorrent is not in the image: `apk add qbittorrent luci-app-qbittorrent` (cw-opt feed).
+# This file is here so the install finds it: apk keeps an existing config, so the app arrives
+# off, downloading to the USB drive, and with its web UI on 8081 - not the package's 8080,
+# which the image's provisioning listener (49-cw-awvoice-provision-port) already holds.
+config qbittorrent 'config'
+	option enabled '0'
+	option download_dir '/mnt/download'
+	option http_port '8081'

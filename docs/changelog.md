@@ -30,6 +30,16 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
   this project's own signed feed, `cw-opt`, which every router now lists. One line each, see
   [what is included](included.md#one-install-away). A keep-settings upgrade removes the apps from
   a router that had them, and keeps their settings for a reinstall.
+- **A guide for the optional apps.** [Install optional apps](install-apps.md) walks through
+  installing and setting up Tailscale, Cloudflare Tunnel, Syncthing, qBittorrent, AdGuard Home and
+  the USB printer server, from *System → Software* or the command line.
+- **AdGuard Home's and the printer server's settings survive a firmware upgrade.** They used to be
+  deleted on the first boot of a new image; now a reinstall brings them back. While AdGuard Home
+  is not installed, the first boot also puts DNS back on dnsmasq (port 53), so an upgrade never
+  leaves the network without name lookups.
+- **qBittorrent's web UI moves to port 8081.** Port 8080 belongs to the provisioning listener for
+  network phones, so qBittorrent's page never opened there. A router upgraded with an older
+  qBittorrent configuration is moved to 8081 too.
 - **Night mode can switch off the Phone LED.** *System → LED Management → Night mode* lists
   **Phone** under *Keep on during night*; untick it and the phone lamp stays dark inside the night
   window while the phone keeps working. It is ticked by default, so nothing changes until you

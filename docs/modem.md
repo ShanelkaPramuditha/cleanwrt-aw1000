@@ -53,7 +53,7 @@ and it is **not started** by the image.
 |---|---|
 | package | `qmodem-sipd`, which pulls the vendor VoIP engine, the SMS daemon and the seven pjproject libraries |
 | size in the image | 166 KiB for the service itself, about 1.5 MiB for the seven pjsip packages together |
-| config file | `/etc/config/qmodem_sip`, listed option by option in [UCI options](reference/options.md#qmodem_sip--the-service-a-network-phone-uses) |
+| config file | `/etc/config/qmodem_sip`, listed option by option in [UCI options](reference/options.md#qmodem_sip-the-service-a-network-phone-uses) |
 | what starts it | the AWvoice page's SIP switch, through `/etc/init.d/qmodem_voip_sipd` |
 | boot order, if enabled | SMS daemon 92, phone daemon 95, VoIP engine 99, SIP service 100 |
 | what is deliberately **not** selected | `luci-app-qmodem-voip`. Two pages for one service drift apart, so the switch, the credentials and the audio socket live on the AWvoice screen |

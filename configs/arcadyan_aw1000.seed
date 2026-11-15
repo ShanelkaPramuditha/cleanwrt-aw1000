@@ -398,7 +398,7 @@ CONFIG_PACKAGE_luci-app-minidlna=y
 #               (the LuCI switch, original CleanWRT code, from the cw-opt feed).
 #               files/etc/config/syncthing stays in the image: an install keeps it,
 #               so the service still arrives off and pointed at /mnt.
-#   p910nd    = NOT in the build (the USB printer share): `apk add p910nd luci-app-p910nd`.
+#   p910nd    = NOT in the build (the USB printer share): `apk add kmod-usb-printer p910nd luci-app-p910nd`.
 CONFIG_PACKAGE_samba4-server=y
 CONFIG_PACKAGE_luci-app-samba4=y
 # hd-idle - USB HDD spindown timer (NAS users). Ships DISABLED; enable in

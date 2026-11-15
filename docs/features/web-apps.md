@@ -18,7 +18,8 @@ apk add qbittorrent luci-app-qbittorrent      # qBittorrent with its LuCI page
 
 `syncthing` comes from the official OpenWrt repositories. `luci-app-syncthing`, `qbittorrent` and
 `luci-app-qbittorrent` come from this project's own signed feed, `cw-opt`, which the image already
-lists ([extra packages](../extra-packages.md)). Both apps arrive switched off.
+lists ([extra packages](../extra-packages.md)). Both apps arrive switched off. Step by step, from LuCI
+or SSH: [Install optional apps](../install-apps.md).
 
 ## Start and stop an app
 
@@ -47,7 +48,7 @@ to `http://127.0.0.1:8384`.
 Downloads to a USB drive attached to the router, controlled from a web page.
 
 1. *Services → qBittorrent*, tick **Enable**, **Save & Apply**.
-2. Open `http://192.168.1.1:8080`.
+2. Open `http://192.168.1.1:8081` (not 8080: the router's provisioning listener holds that port).
 3. The user is `admin`. There is no shared default password: until you set your own, qBittorrent
    makes a temporary one every time it starts and prints it to the log. Read it with
    `logread -e qbittorrent` (*System → Logs*).

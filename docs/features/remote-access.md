@@ -15,7 +15,7 @@ LAN from outside, pick **one** of these. All of them ship **disabled**; enable o
 ## Tailscale
 
 A mesh VPN, and the easiest option. It is not in the image (it is a large program); install it
-from the official OpenWrt repositories first:
+from the official OpenWrt repositories first ([step by step](../install-apps.md#tailscale)):
 
 ```sh
 apk update && apk add tailscale luci-app-tailscale-community
@@ -28,7 +28,8 @@ The LuCI page is *Services → Tailscale*.
 ## Cloudflare Tunnel
 
 Exposes a service through your Cloudflare account, with no public IP needed. Install it first,
-from the official OpenWrt repositories: `apk update && apk add cloudflared luci-app-cloudflared`.
+from the official OpenWrt repositories: `apk update && apk add cloudflared luci-app-cloudflared`
+([step by step](../install-apps.md#cloudflare-tunnel)).
 
 *Services → Cloudflare Zero Trust Tunnel → Configuration*: paste your tunnel token and enable.
 

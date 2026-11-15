@@ -1,0 +1,10 @@
+#!/bin/sh
+# qBittorrent's web UI off port 8080. The image opens its provisioning listener on
+# 0.0.0.0:8080 (49-cw-awvoice-provision-port), so a qBittorrent left on 8080 never gets its
+# web page. A keep-settings upgrade brings back an older /etc/config/qbittorrent; this moves
+# it to 8081, the port the image's own file ships. Any other port is left as chosen.
+[ "$(uci -q get qbittorrent.config.http_port)" = 8080 ] || exit 0
+uci -q set qbittorrent.config.http_port=8081
+uci -q commit qbittorrent
+logger -t cw-firstboot "qbittorrent: web UI moved from 8080 (the provisioning listener) to 8081"
+exit 0

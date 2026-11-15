@@ -34,6 +34,8 @@ apk update
 apk add qbittorrent luci-app-qbittorrent
 ```
 
+Step-by-step install and setup of every optional app: [Install optional apps](install-apps.md).
+
 The feed lives at `https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/feed/` and is listed in
 `/etc/apk/repositories.d/cw-opt.list`. Its index is signed with the project's key, which every
 image trusts (`/etc/apk/keys/public-key.pem`), so `apk` refuses a feed signed with anything else.

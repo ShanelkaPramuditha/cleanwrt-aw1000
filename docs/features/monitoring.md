@@ -71,5 +71,6 @@ Nothing on this page opens a port by itself. Bandwidth monitoring and vnStat rea
     it safe to attach to a report.
 
 ??? question "Can I block ads on the whole network?"
-    Not with a built-in app: Adblock and AdGuard Home are not in this build. You can point the
+    Yes, with AdGuard Home: it is not in the image, and installs and sets up in a few minutes, see
+    [Install optional apps](../install-apps.md#adguard-home). Without an app, you can point the
     router's upstream DNS at a filtering resolver (*Network → DHCP and DNS → Forwards*).

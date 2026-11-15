@@ -50,10 +50,10 @@ arrives switched off.
 | Cloudflare Zero Trust Tunnel | `apk add cloudflared luci-app-cloudflared` | publish a service without a public IP ([remote access](features/remote-access.md)) |
 | Syncthing | `apk add syncthing luci-app-syncthing` | folder sync with your phone and PC ([web apps](features/web-apps.md)) |
 | qBittorrent | `apk add qbittorrent luci-app-qbittorrent` | download client with its own web interface ([web apps](features/web-apps.md)) |
+| AdGuard Home | `apk add adguardhome luci-app-adguardhome` | blocks ads and trackers for the whole network ([setup](install-apps.md#adguard-home): it takes over DNS) |
 
-Run `apk update` first. Tailscale, Cloudflare and `syncthing` come from the official OpenWrt
-repositories; `luci-app-syncthing` and qBittorrent come from this project's signed `cw-opt` feed,
-which the image already lists ([extra packages](extra-packages.md)).
+**Step-by-step install and setup for each one, from LuCI or SSH: [Install optional apps](install-apps.md).**
+The printer server (`p910nd`) is there too.
 
 ## Core and system
 

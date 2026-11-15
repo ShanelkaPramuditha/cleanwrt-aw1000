@@ -110,6 +110,7 @@ nav:
       - Glossary: reference/glossary.md
   - Packages:
       - What is included: included.md
+      - Install optional apps: install-apps.md
       - Full package list: generated/packages.md
       - Extra packages: extra-packages.md
       - Updating and pinning: updating.md
