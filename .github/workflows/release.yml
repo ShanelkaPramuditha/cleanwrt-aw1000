@@ -66,9 +66,11 @@ jobs:
           if [ -n "$at" ] && [ "$at" != "$sha" ]; then
             echo "::error::tag $tag exists at $at, but the draft was built from $sha"; exit 1
           fi
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$ver"
+            echo "tag=$tag"
+            echo "sha=$sha"
+          } >> "$GITHUB_OUTPUT"
           echo "draft $tag, built from $sha"
 
       # The build verified the image signature before it uploaded anything. Here the files are

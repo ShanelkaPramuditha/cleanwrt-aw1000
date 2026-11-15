@@ -51,9 +51,11 @@ jobs:
         run: |
           ver=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
           tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "draft=${{ inputs.draft && 'true' || 'false' }}" >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$ver"
+            echo "tag=$tag"
+            echo "draft=${{ inputs.draft && 'true' || 'false' }}"
+          } >> "$GITHUB_OUTPUT"
 
       # A draft is checked before the two-hour build, not after it: it needs the signing keys
       # (an unsigned image fails the router's signature check on sysupgrade, and a throw-away
