@@ -29,7 +29,6 @@ listens on the LAN until you enable it. **Set credentials before you enable each
 | Torrents (qBittorrent) | *Services → qBittorrent* | web UI on `:8080`; downloads go to `/mnt/download` |
 | Folder sync (Syncthing) | *Services → Syncthing* | web UI on `:8384` |
 | Media server (miniDLNA) | *Services → miniDLNA* | DLNA on the LAN only, port 8200 |
-| Printer share (p910nd) | *Services → p910nd* | raw port 9100 and mDNS |
 | Web file manager | *Tools → File Manager* | browse, edit, upload, delete, hex editor |
 | Drive spin-down | *Tools → HDD Idle* | for USB hard disks |
 
@@ -76,7 +75,7 @@ it does not re-scan on every reboot.
 | miniDLNA | **off** (`enabled='0'`) | when on: port 8200 on `br-lan`, media from `/mnt`, database in `/var/run/minidlna`, name `CleanWRT` |
 | Syncthing | **off** | when on, its own interface on `0.0.0.0:8384` and its config in `/etc/syncthing` |
 | qBittorrent | **off** | downloads default to the first USB drive |
-| p910nd (printer) | **off** | when on, `/dev/usb/lp0`, advertised over mDNS as `CleanWRT USB printer` |
+| p910nd (printer share) | **not in the image** | `apk add p910nd luci-app-p910nd` if you need it |
 | `hd-idle` | **off** | spin-down for a USB hard disk |
 | `smartd` | **not in the image** | deliberately |
 | Transmission | **not in the image** | qBittorrent covers the same job; the package is in the official feed if you want it |
@@ -88,7 +87,6 @@ it does not re-scan on every reboot.
 | 139, 445 | Samba | **open on the LAN**, but the share refuses guest access |
 | 8384 | Syncthing's web interface | off. When enabled it binds all addresses, so set a password first |
 | 8200 | miniDLNA | off |
-| 515 | p910nd | off |
 | 8080 | qBittorrent's own interface | off until the app is enabled |
 
 ## When it does not work

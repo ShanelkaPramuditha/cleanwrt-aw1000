@@ -251,6 +251,9 @@ jobs:
                      '*arcadyan_aw1000-initramfs-uImage.itb'; do
               compgen -G "dist/$pat" > /dev/null || { echo "ERROR: no file matches $pat" >&2; exit 1; }
           done
+          # The image signing key's public half goes with the images, so anyone can check a
+          # signature against the key the release was signed with.
+          if [ -s keys-release/key-build.pub ]; then cp keys-release/key-build.pub dist/key-build.pub; fi
           # The three image hashes in the log: two runs of one commit can be compared from the
           # summary alone, with nothing downloaded.
           sha256sum dist/*.bin dist/*.ubi dist/*.itb
@@ -310,7 +313,9 @@ jobs:
             echo "Flash the \`*-squashfs-sysupgrade.bin\` with sysupgrade; read [the flash layout page](${site}/mtd-layout/)"
             echo "first, the image needs the expanded MTD layout. \`sha256sums.cw\` lists the checksums of the images and"
             echo "the provenance bundle; \`provenance.tar.gz\` holds the full config, the pinned feeds and"
-            echo "the package manifest of this build. Built from commit $GITHUB_SHA."
+            echo "the package manifest of this build. \`key-build.pub\` is the public key the images are"
+            echo "signed with; a router that has \`ucert\` installed checks it before sysupgrade. Built from"
+            echo "commit $GITHUB_SHA."
           } > notes.md
           if gh release view "$tag" >/dev/null 2>&1; then
             [ "$(gh release view "$tag" --json isDraft -q .isDraft)" = "true" ] ||

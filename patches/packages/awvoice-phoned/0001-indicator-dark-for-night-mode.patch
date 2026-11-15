@@ -1,0 +1,189 @@
+Phone LED: a memory-only "dark" hold over ubus, for the LED app's night mode
+
+The phone daemon owns green:phone and reads the level back every step, restoring it when
+another program writes it - so the LED app (luci-app-cw-led) cannot put the lamp out at night,
+and its night mode had no Phone entry. This adds one ubus method,
+
+    ubus call awvoice indicator_dark '{"dark":true}'    # false lets it follow the line again
+
+which holds the LED dark while the line's state keeps running underneath (a call still rings,
+the status reply still says ring). The read-back holds the dark against other writers the same
+way it holds a lit level. It is not a setting: nothing is written to /etc/config/awvoice, so the
+phone page keeps showing the user's own LED choice, and a restart of the service clears the hold
+(the LED app asserts it again on its next tick). Releasing it restarts a blink from its lit half.
+tests/test_indicator.c covers the hold, a call ringing under it, another writer, and the release.
+
+Applies to: https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git
+            @ 30d492c044641fa5313f01238e6f42277a6a6dea (pinned in configs/local-packages.pin)
+Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
+            installed, with `patch -p1 --fuzz=0`.
+Upstream status: not submitted yet (the same author maintains both packages).
+
+--- a/awvoice-phoned/src/daemon/api.c
++++ b/awvoice-phoned/src/daemon/api.c
+@@ -291,6 +291,28 @@ static int m_ring_test(struct ubus_context *ctx, struct ubus_object *obj, struct
+ 	return action_reply(ctx, req, err, st.off_hook);
+ }
+ 
++enum { ID_DARK, ID_MAX };
++static const struct blobmsg_policy indicator_policy[ID_MAX] = { [ID_DARK] = { .name = "dark", .type = BLOBMSG_TYPE_BOOL } };
++
++static int m_indicator_dark(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
++{
++	struct blob_attr *tb[ID_MAX];
++	int dark;
++
++	(void)obj; (void)method;
++	blobmsg_parse(indicator_policy, ID_MAX, tb, blob_data(msg), blob_len(msg));
++	if (!tb[ID_DARK])
++		return UBUS_STATUS_INVALID_ARGUMENT;
++	if (!the_api->indicator_dark)
++		return UBUS_STATUS_NOT_SUPPORTED;
++	dark = blobmsg_get_bool(tb[ID_DARK]);
++	the_api->indicator_dark(the_api->ctx, dark);
++	blob_buf_init(&reply_buf, 0);
++	blobmsg_add_u8(&reply_buf, "ok", 1);
++	blobmsg_add_u8(&reply_buf, "dark", dark);
++	return send_reply(ctx, req);
++}
++
+ static int m_reload(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+ {
+ 	(void)obj; (void)method; (void)msg;
+@@ -1135,6 +1157,7 @@ static const struct ubus_method methods[] = {
+ 	UBUS_METHOD_NOARG("hangup", m_hangup),
+ 	UBUS_METHOD("ring_test", m_ring_test, ring_policy),
+ 	UBUS_METHOD_NOARG("reload", m_reload),
++	UBUS_METHOD("indicator_dark", m_indicator_dark, indicator_policy),
+ 	UBUS_METHOD_NOARG("line_test", m_line_test),
+ 	UBUS_METHOD_NOARG("forwarding_get", m_forwarding_get),
+ 	UBUS_METHOD("web_originate", m_web_originate, web_originate_policy),
+--- a/awvoice-phoned/src/daemon/api.h
++++ b/awvoice-phoned/src/daemon/api.h
+@@ -23,6 +23,8 @@
+  *                     setup, call, release -> "call"; no_service -> "noservice" ("down" is the provider's, when ubus fails)
+  *                     phase: incoming -> "ringing", dialing -> "dialing", alerting -> "alerting", active -> "active"
+  *                     elapsedSec: (now - answered_ms) / 1000, 0 before the answer; null JSON for unknown tri-states
++ *   indicator_dark { dark: bool } -> { ok, dark }: hold the phone LED dark, or let it follow the line again.
++ *                     Not a setting: memory only, so a restart of the service clears it (night mode re-asserts it).
+  *   health     {}  -> Health without log.tail: { atPort, line, modem (modem carries hdVoice 'off'|'set'|'on', audioRate, voiceLayout 8000|16000), system, indicator { led, state, leds: [] }, counters,
+  *                     machine { greetingLoaded, greetingMs, greetingError, delaySec },
+  *                     storage { recordings { path, ready, freeMb, error }, messages { ... } },
+@@ -154,6 +156,7 @@ struct api_ctx {
+ 	unsigned long long start_ms;	/* the daemon's start (monotonic) */
+ 	int (*bridge_stats)(void *ctx, void *out);	/* fills struct awfxs_bridge_stats; 0 or -errno */
+ 	int (*reload)(void *ctx);	/* the daemon's reload */
++	void (*indicator_dark)(void *ctx, int dark);	/* hold the phone LED dark (1) or not (0) */
+ 	int (*greeting_may_swap)(void *ctx);	/* 1 when the greeting may be put in place now: the line quiet and nothing playing out of it */
+ 	void (*greeting_applied)(void *ctx);	/* the core's settings pushed again, so the answer rule follows the new greeting */
+ 	void *ctx;
+--- a/awvoice-phoned/src/daemon/indicator.c
++++ b/awvoice-phoned/src/daemon/indicator.c
+@@ -100,6 +100,15 @@ static void led_verify(struct indicator *ind, unsigned long long now_ms)
+ 	}
+ }
+ 
++void indicator_set_dark(struct indicator *ind, int dark)
++{
++	dark = !!dark;
++	if (ind->dark == dark)
++		return;
++	ind->dark = dark;
++	ind->lit = -1;		/* the next step writes again: dark now, or the pattern from its lit half */
++}
++
+ void indicator_step(struct indicator *ind, const struct phone_status *st, unsigned long long now_ms)
+ {
+ 	const int ready = st->modem_up && st->registered == 1 && st->ims_registered == 1;
+@@ -112,6 +121,10 @@ void indicator_step(struct indicator *ind, const struct phone_status *st, unsign
+ 		ind->state = new_state;
+ 		ind->lit = -1;				/* the pattern restarts from its lit half */
+ 	}
++	if (ind->dark) {				/* held dark: the read-back above keeps it off too */
++		led_level(ind, 0);
++		return;
++	}
+ 	if (ind->state == IND_RING || ind->state == IND_OFFHOOK) {
+ 		unsigned int half = (ind->state == IND_RING ? ind->ring_rate_ms : ind->offhook_rate_ms) / 2u;
+ 
+--- a/awvoice-phoned/src/daemon/indicator.h
++++ b/awvoice-phoned/src/daemon/indicator.h
+@@ -23,6 +23,8 @@ struct indicator {
+ 	int fd;				/* the brightness file, -1 while none */
+ 	int broken;			/* a write failed: nothing is written again until the LED changes */
+ 	int foreign_warned;		/* the once-per-run note about another writer of the LED */
++	int dark;			/* held dark on request (night mode, through ubus): the state still
++					 * runs, the LED stays off; not a setting, so a restart clears it */
+ 	unsigned int ring_rate_ms, offhook_rate_ms;
+ 	enum ind_state state;
+ 	int lit;			/* the level written last, -1 = unknown */
+@@ -42,6 +44,9 @@ void indicator_apply(struct indicator *ind, const char *led, unsigned int ring_r
+ /* one step of the loop: the pattern state machine; writes happen only on an edge */
+ void indicator_step(struct indicator *ind, const struct phone_status *st, unsigned long long now_ms);
+ 
++/* hold the LED dark (1) or let it follow the line again (0); the next step writes the level */
++void indicator_set_dark(struct indicator *ind, int dark);
++
+ /* the LED dark and the file closed (service stop) */
+ void indicator_close(struct indicator *ind);
+ 
+--- a/awvoice-phoned/src/daemon/main.c
++++ b/awvoice-phoned/src/daemon/main.c
+@@ -2328,6 +2328,16 @@ static int api_reload(void *ctx)
+ 	return reload();
+ }
+ 
++/* night mode (luci-app-cw-led) holds the phone LED dark through ubus: memory only, logged on a change */
++static void api_indicator_dark(void *ctx, int dark)
++{
++	struct daemon *dm = ctx;
++
++	if (!!dark != dm->ind.dark)
++		printf(dark ? "the indicator LED is held dark (night mode)\n" : "the indicator LED follows the line again\n");
++	indicator_set_dark(&dm->ind, dark);
++}
++
+ static void on_ubus_connect(struct ubus_context *ctx)
+ {
+ 	int err = api_init(ctx, &d.api);
+@@ -2598,7 +2608,7 @@ int main(int argc, char **argv)
+ 	d.hooks = (struct phone_hooks){ .ctx = &d, .bridge_start = hook_bridge, .bridge_stop = hook_bridge_stop, .modem_level = hook_level, .event = hook_event, .call_ended = hook_call_ended, .wall_clock = hook_wall_clock };
+ 	snprintf(d.web_reason, sizeof(d.web_reason), "off");
+ 	d.api = (struct api_ctx){ .my_number = d.cfg.my_number, .channel = d.cfg.channel, .at_interface = d.cfg.at_interface,
+-		.port = d.ans.port, .bridge_stats = api_bridge_stats, .reload = api_reload, .ctx = &d, .hd = d.cfg.hd, .region = d.region->name,
++		.port = d.ans.port, .bridge_stats = api_bridge_stats, .reload = api_reload, .indicator_dark = api_indicator_dark, .ctx = &d, .hd = d.cfg.hd, .region = d.region->name,
+ 		.record_path = d.cfg.record_path, .message_path = d.cfg.machine_path,
+ 		.machine = &d.machine, .machine_delay_s = d.cfg.machine_delay_s, .arbiter = &d.arbiter,
+ 		.greeting_up = &d.greeting_up, .greeting_may_swap = greeting_may_swap, .greeting_applied = greeting_applied,
+--- a/awvoice-phoned/tests/test_indicator.c
++++ b/awvoice-phoned/tests/test_indicator.c
+@@ -94,6 +94,29 @@ int main(void)
+ 	indicator_step(&ind, &st, 8500);
+ 	assert(ind.state == IND_READY && level(led) == '1');
+ 
++	/* held dark (night mode): off at once and kept off, the state still followed; the read-back holds the
++	 * dark against another writer; released, the pattern starts again from its lit half */
++	indicator_set_dark(&ind, 1);
++	indicator_step(&ind, &st, 9000);
++	assert(ind.state == IND_READY && level(led) == '0');
++	st = status(1, 0, 1);
++	indicator_step(&ind, &st, 9100);			/* a call rings in the dark: no blink */
++	assert(ind.state == IND_RING && level(led) == '0');
++	indicator_step(&ind, &st, 9300);
++	assert(level(led) == '0');
++	if (pwrite(ind.fd, "1", 1, 0) != 1)
++		return 1;
++	indicator_step(&ind, &st, 9400);			/* another program lights it: put out again */
++	assert(level(led) == '0');
++	indicator_set_dark(&ind, 1);				/* asked again: no change */
++	assert(ind.dark == 1);
++	indicator_set_dark(&ind, 0);
++	indicator_step(&ind, &st, 9500);			/* released while ringing: the blink restarts lit */
++	assert(ind.state == IND_RING && level(led) == '1');
++	st = status(1, 0, 0);
++	indicator_step(&ind, &st, 9600);
++	assert(ind.state == IND_READY && level(led) == '1');
++
+ 	int rfd = dup(ind.fd);			/* close() takes the descriptor the levels were read through */
+ 	char last = 'x';
+ 

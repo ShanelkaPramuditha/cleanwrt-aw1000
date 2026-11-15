@@ -1,6 +1,6 @@
 #!/bin/sh
 # Clean up after apps this fork no longer ships: Passwall, Passwall 2, HomeProxy,
-# AdGuard Home and Adblock.
+# AdGuard Home, Adblock and the p910nd printer share.
 #
 # A keep-settings sysupgrade from an image that carried them keeps their files in
 # /etc/config, and the firewall keeps the include sections Passwall wrote for itself.
@@ -41,6 +41,7 @@ drop_app passwall2   passwall2
 drop_app homeproxy   homeproxy
 drop_app adguardhome adguardhome /etc/adguardhome.yaml /etc/adguardhome
 drop_app adblock     adblock
+drop_app p910nd      p910nd
 
 drop_fw_include passwall  passwall passwall_server
 drop_fw_include passwall2 passwall2 passwall2_server

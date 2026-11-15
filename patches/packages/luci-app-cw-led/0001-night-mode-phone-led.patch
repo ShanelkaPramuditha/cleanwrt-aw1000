@@ -1,0 +1,182 @@
+Night mode: the Phone LED can be put out too
+
+The phone LED (green:phone) belongs to the phone service (awvoice-phoned), which restores the
+lamp whenever another program writes it, so night mode had no Phone entry and left the lamp lit
+all night. With patches/packages/awvoice-phoned/0001 the phone service takes a memory-only hold
+over ubus (`awvoice indicator_dark`), and this asks for it:
+
+- the daemon (phone_update, run with night_update on every tick) holds the lamp dark while the
+  night window is open and 'phone' is not in the exempt list, releases it when the window closes,
+  sends the hold again about once a minute (the phone service forgets it when it restarts), and
+  releases it when the daemon stops or `cw-led-daemon restore` runs. Without the phone service the
+  call fails quietly and is tried again a minute later. The first tick after a start sends the
+  current state either way, which also clears a hold a crashed daemon left behind.
+- the settings page offers Phone in "Keep on during night", and says the lamp belongs to the phone
+  service.
+- the shipped config exempts 'phone' like every other LED, so night mode changes nothing until the
+  user unticks it; 90-cw-led adds 'phone' once to a config written before this, so an upgrade does
+  not put the lamp out unasked (cw-led.night.phone_known marks it done).
+
+Applies to: https://github.com/Pr0Luci/luci-app-cw-led.git
+            @ a65586cf81aff771d17183405965b40112d7deea (pinned in configs/local-packages.pin)
+Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
+            installed, with `patch -p1 --fuzz=0`.
+Upstream status: not submitted yet (the same author maintains both packages).
+
+--- a/luci-app-cw-led/htdocs/luci-static/resources/view/cw-led/settings.js
++++ b/luci-app-cw-led/htdocs/luci-static/resources/view/cw-led/settings.js
+@@ -161,7 +161,8 @@ function renderStatus(st) {
+ 			])
+ 		]));
+ 
+-		/* Read-only: green:phone is driven by something else, this app never writes it. */
++		/* Read-only: green:phone is driven by the phone service; this app never writes it
++		 * (night mode asks that service to hold it dark). */
+ 		var phoneOn = !!(leds['green:phone'] && leds['green:phone'].brightness > 0);
+ 		box.appendChild(E('div', { 'class': 'cw-leds' }, [
+ 			monoLamp(leds, 'green:power', _('Power')),
+@@ -355,13 +356,14 @@ return view.extend({
+ 		};
+ 
+ 		o = s.option(form.MultiValue, 'exempt', _('Keep on during night'),
+-			_('Selected LEDs stay on inside the night window. The Phone LED is not controlled by this app, so night mode does not affect it.'));
++			_('Selected LEDs stay on inside the night window. The Phone LED belongs to the phone service: night mode asks it to keep the lamp dark, and it works only while that service runs.'));
+ 		o.depends('enabled', '1');
+ 		o.value('power', _('Power'));
+ 		o.value('wifi', _('Wi-Fi'));
+ 		o.value('fiveg', _('5G'));
+ 		o.value('signal', _('Signal'));
+ 		o.value('internet', _('Internet'));
++		o.value('phone', _('Phone'));
+ 
+ 		/* --- individual LEDs ---------------------------------------------- */
+ 		/* Every LED is always managed: power is default-on, 5G and signal are
+--- a/luci-app-cw-led/root/etc/config/cw-led
++++ b/luci-app-cw-led/root/etc/config/cw-led
+@@ -28,10 +28,12 @@ config night 'night'
+ 	list exempt 'fiveg'
+ 	list exempt 'signal'
+ 	list exempt 'internet'
++	list exempt 'phone'
+ 
+ # Every LED is always managed: power is default-on, 5G and signal are
+-# tri-color. The phone LED (green:phone) is left alone, and so is the
+-# ethernet WAN port LED (stock kernel block). Only LEDs with settings
++# tri-color. The phone LED (green:phone) belongs to the phone service: night
++# mode asks that service to hold it dark (exempt 'phone' keeps it on). The
++# ethernet WAN port LED is left alone (stock kernel block). Only LEDs with settings
+ # have a section below.
+ 
+ config led 'wifi'
+--- a/luci-app-cw-led/root/etc/uci-defaults/90-cw-led
++++ b/luci-app-cw-led/root/etc/uci-defaults/90-cw-led
+@@ -40,6 +40,19 @@ if ! uci -q get cw-led.global >/dev/null; then
+ 	EOF
+ fi
+ 
++# Night mode learned the phone LED. A config written before that has no 'phone' in
++# the exempt list, which would now put the phone lamp out at night without anyone
++# asking: add it once, so the lamp behaves as before until it is unticked. The
++# marker keeps a later run (every upgrade) from adding it back.
++if uci -q get cw-led.night >/dev/null && [ -z "$(uci -q get cw-led.night.phone_known)" ]; then
++	case " $(uci -q get cw-led.night.exempt) " in
++	*" phone "*) ;;
++	*) uci -q add_list cw-led.night.exempt=phone ;;
++	esac
++	uci -q set cw-led.night.phone_known=1
++	uci -q commit cw-led
++fi
++
+ /etc/init.d/cw-led enable 2>/dev/null
+ /etc/init.d/rpcd reload 2>/dev/null
+ 
+--- a/luci-app-cw-led/root/usr/sbin/cw-led-daemon
++++ b/luci-app-cw-led/root/usr/sbin/cw-led-daemon
+@@ -16,6 +16,8 @@
+ 
+ CACHE_KEYS=""
+ NIGHT_STATE=off
++PHONE_DARK=unknown   # the hold last confirmed by the phone service: 0, 1, or unknown
++PHONE_RETRY_AT=0
+ TICK_NO=0
+ LAST_MODEM=0
+ FORCE_MODEM_POLL=0
+@@ -258,7 +260,7 @@ apply_static_triggers() {
+ 	led_set "green:internet" trigger none
+ 
+ 	# green:phone is not ours. This daemon never reads, writes or parks it, and
+-	# leaves its led.state entry alone.
++	# leaves its led.state entry alone (night mode asks its owner instead: phone_update).
+ }
+ 
+ # --- night mode ------------------------------------------------------------------
+@@ -299,6 +301,45 @@ concept_off() {
+ 	esac
+ }
+ 
++# The phone LED belongs to the phone service (awvoice-phoned), which restores the level
++# whenever anything else writes it. Night mode therefore asks that service to hold the
++# lamp dark (`ubus call awvoice indicator_dark`), a memory-only hold. It is sent on a
++# change, and again about once a minute while the hold is wanted, because the service
++# forgets it when it restarts. Without the phone service (or with a build that lacks the
++# method) the call fails, nothing else happens, and it is tried again a minute later.
++phone_set_dark() { # 1 | 0
++	local v=false
++	[ "$1" = 1 ] && v=true
++	command -v ubus >/dev/null 2>&1 || return 1
++	ubus -t 2 call awvoice indicator_dark "{\"dark\":$v}" >/dev/null 2>&1
++}
++
++phone_update() {
++	local want=0
++	if [ "$NIGHT_STATE" = on ] && ! is_exempt phone; then
++		want=1
++	fi
++	if [ "$want" != "$PHONE_DARK" ]; then
++		[ "$TICK_NO" -ge "$PHONE_RETRY_AT" ] || return 0
++	elif [ "$want" = 1 ] && [ $((TICK_NO % 12)) -eq 0 ]; then
++		:   # re-assert: the service may have restarted since
++	else
++		return 0
++	fi
++	if phone_set_dark "$want"; then
++		if [ "$want" != "$PHONE_DARK" ] && [ "$PHONE_DARK" != unknown -o "$want" = 1 ]; then
++			if [ "$want" = 1 ]; then
++				logger -t cw-led "phone LED held dark (night mode)"
++			else
++				logger -t cw-led "phone LED released"
++			fi
++		fi
++		PHONE_DARK=$want
++	else
++		PHONE_RETRY_AT=$((TICK_NO + 12))
++	fi
++}
++
+ night_update() {
+ 	local active=0 concept
+ 	if [ "$night_enabled" = 1 ] && cw_led_in_window "$night_start" "$night_end"; then
+@@ -320,6 +361,7 @@ night_update() {
+ 		NIGHT_STATE=off
+ 		logger -t cw-led "night mode OFF"
+ 	fi
++	phone_update
+ }
+ 
+ # --- modem-driven tri-colors -------------------------------------------------------
+@@ -688,6 +730,7 @@ on_exit() {
+ 	clear_cache
+ 	apply_static_triggers
+ 	park_owned_leds            # daemon-owned LEDs off
++	[ "$PHONE_DARK" = 0 ] || phone_set_dark 0   # never leave the phone LED held dark
+ 	logger -t cw-led "stopped - static triggers restored"
+ }
+ 
+@@ -741,6 +784,7 @@ case "${1:-}" in
+ restore)
+ 	apply_static_triggers
+ 	park_owned_leds
++	phone_set_dark 0   # a crashed daemon may have left the phone LED held dark
+ 	exit 0
+ 	;;
+ '')

@@ -193,6 +193,9 @@ package feed.
 | OpenClash no longer built for the optional feed (Nikki runs the same Clash profiles) | `feeds.conf.default`, `tools/`, `files/etc/`, `.devcontainer/cw-dev.sh`, `docs/` |
 | A missing or partly deleted OpenWrt tree stops the build in seconds instead of failing hours later | `tools/cw-release-build.sh` |
 | Images are signed again: on OpenWrt 25.12 the build makes the signing certificate itself | `tools/cw-release-build.sh`, `tools/cw-sign-keys.sh` |
+| Night mode can switch off the Phone LED (a memory-only hold in the phone service, asked for by the LED app) | `patches/packages/awvoice-phoned/`, `patches/packages/luci-app-cw-led/` |
+| The p910nd printer share and the unused OHCI USB driver removed | `configs/arcadyan_aw1000.seed`, `files/`, `patches/feeds/luci/`, `docs/` |
+| Every release carries the image signing public key | `.github/workflows/` |
 | Build once, publish the tested files: builds fill a private draft release (signature verified, notes from the changelog), and a separate `release` workflow publishes it without rebuilding | `.github/workflows/`, `docs/` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where

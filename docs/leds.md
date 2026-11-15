@@ -32,7 +32,7 @@ can watch the router's state without walking to it.
 
 Two chips above the lamps say whether the daemon is running and whether the night window is open.
 Six tiles show the lamps. The sixth, **Phone**, is read-only: this app reports what the phone
-service owns but never writes it.
+service owns but never writes it (night mode asks the phone service to hold it dark instead).
 
 !!! info "About the screenshots"
     These were taken from a real AW1000 running this firmware. The states in them belong to the
@@ -102,16 +102,20 @@ Night mode switches the lamps you choose off between two times of day.
 |---|---|
 | Enabled | off |
 | Window | `22:30` to `06:00`. A window that runs past midnight is normal, not an error |
-| Keep on during night | all five daemon-owned lamps are on the list, so nothing goes dark until you remove one |
+| Keep on during night | all six lamps are on the list, so nothing goes dark until you remove one |
 
 The page draws the window as a timeline so you can see it, and hides the window controls entirely
 until night mode is enabled. Entering the window forces every non-exempt lamp off; leaving it
 re-reads the modem and re-probes at once, so the panel is current again the minute the window closes.
 
-!!! note "The phone lamp is not in the night list"
-    Night mode here does not touch the phone lamp, and it is not bound to the theme's night behaviour
-    either. A line that must stay silent at night is a
-    [quiet hours](awvoice/quiet-hours.md) question, which is answered on the phone's own page.
+!!! note "The phone lamp at night"
+    The phone lamp belongs to the [phone service](awvoice.md), so night mode does not switch it
+    itself: when **Phone** is off the keep-on list, it asks the phone service to hold the lamp dark
+    inside the window, and to let it follow the line again at the end. The phone keeps working
+    underneath: a call still rings, only the lamp stays off. The hold lives in the phone service's
+    memory and is sent again about once a minute, so it survives a restart of either service; with
+    the phone service stopped there is nothing to hold. A line that must stay *silent* at night is a
+    [quiet hours](awvoice/quiet-hours.md) question, answered on the phone's own page.
 
 ## Settings
 
@@ -127,7 +131,7 @@ Everything is on the page and stored in `/etc/config/cw-led`.
 | Modem AT port | `timeout` | AT response timeout (s) | `3` | how long one AT reply may take |
 | Modem AT port | `fail_threshold` | Failure threshold | `3` | failed polls in a row before the 5G and signal lamps go off |
 | Modem AT port | `grace_max_ticks` | Contention grace (polls) | `2` | polls for which the last colour is held when a reply is cut short but the modem is provably serving. `0` blanks at once |
-| Night | `enabled`, `start`, `end`, `exempt` | Night mode | `0`, `22:30`, `06:00`, all five lamps | see [night mode](#night-mode) |
+| Night | `enabled`, `start`, `end`, `exempt` | Night mode | `0`, `22:30`, `06:00`, all six lamps (`power`, `wifi`, `fiveg`, `signal`, `internet`, `phone`) | see [night mode](#night-mode) |
 | Wi-Fi | `mode` | Mode | `auto` | `auto` is daemon-driven from the radios, because the Wi-Fi driver here ignores the kernel's per-radio triggers. `netdev` puts the kernel's traffic trigger on one interface |
 | Wi-Fi | `device` | Wi-Fi interface | unset = first found | only shown in `netdev` mode |
 | Signal | `rsrp_excellent`, `rsrp_poor` | RSRP thresholds | `-95`, `-110` | the green and red limits |
@@ -200,7 +204,7 @@ never read, written or parked by this app.
 
 ??? question "How do I turn off the AW1000 LEDs at night?"
     Enable night mode in **System → LED Management**. The default window is 22:30 to 06:00 and a
-    window past midnight works. Remove a lamp from the keep-on list to switch it off inside the
+    window past midnight works. Remove a lamp, the phone lamp included, from the keep-on list to switch it off inside the
     window. The hardware cannot dim, so a lamp is either off or on.
 
 ??? question "Why is the 5G LED on my AW1000 off?"

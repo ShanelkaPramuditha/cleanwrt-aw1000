@@ -159,7 +159,9 @@ The front-panel phone LED follows the line, and one option names it: `led`, whic
 | the handset is off hook | slow blink — `offhook_rate_ms`, **1000** by default |
 
 The other five lamps on the panel belong to
-[LED Management](../leds.md), which does not touch this one while AWvoice is running.
+[LED Management](../leds.md), which never writes this one. Its night mode can ask AWvoice to hold
+the lamp dark inside the night window (`ubus call awvoice indicator_dark`, memory only): the line
+works as usual underneath, and the lamp follows it again when the window ends.
 
 ## Settings on this page
 

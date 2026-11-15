@@ -57,7 +57,6 @@ in [UCI options](options.md).
 | `fstab` | USB drives are auto-mounted under `/mnt`; no anonymous swap, no filesystem check at boot |
 | `irqbalance` | enabled |
 | `minidlna` | `enabled='0'`; when on, port 8200 on the LAN, media from `/mnt`, name `CleanWRT` |
-| `p910nd` | `enabled='0'`; when on, `/dev/usb/lp0` with an mDNS advertisement labelled `CleanWRT USB printer` |
 | `qmodem_ttl` | **enabled**, TTL of forwarded packets rewritten to `64` |
 | `samba4` | the daemon starts, with one share (`USB` → `/mnt`, writable) and `guest_ok='no'`, so nothing is reachable until you add users |
 | `syncthing` | `enabled='0'`; when on, its own interface on `0.0.0.0:8384` and its config in `/etc/syncthing` |

@@ -172,9 +172,7 @@ than shipping a half-applied change.
 | patch | what it changes |
 |---|---|
 | `0001-status-firmware-version-drop-luci-suffix` | the *Firmware Version* row shows the release description alone. A detached-HEAD feed was stamping "LuCI (HEAD detached at …)" into a user-facing page |
-| `0006-p910nd-menu-title-printer-server` | the menu title, from `p910nd - Printer server` to `Printer server` |
 | `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `shanelkapramuditha.github.io/cleanwrt-aw1000/.versions.json`, and the comparison counts every number of the label (`-R2.2`, `-SP1`), not only the OpenWrt base |
-| `0008-p910nd-mdns-type-label` | the option label reads `mDNS type` |
 | `0009-filemanager-default-width` | the file manager's default width, 400 to 800 |
 
 ### Other feeds, and the OpenWrt tree itself
@@ -194,6 +192,13 @@ than shipping a half-applied change.
 |---|---|
 | `packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo` | one line: the login page shows the CleanWRT logo where the theme prints the router's hostname. The image file lives outside the theme's own directory, so a theme update can neither overwrite it nor collide with the patch |
 | `packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport` | the login card sits in the middle of the screen instead of 7vh from the top; on a screen shorter than the card the page scrolls from the top as before |
+
+### Out-of-feed packages
+
+| patch | what it changes |
+|---|---|
+| `packages/awvoice-phoned/0001-indicator-dark-for-night-mode` | one ubus method, `awvoice indicator_dark {dark}`: a memory-only hold that keeps the phone LED dark while the line works underneath. Nothing is written to the phone's settings, and a restart clears it |
+| `packages/luci-app-cw-led/0001-night-mode-phone-led` | Phone joins *Keep on during night*: outside the keep-on list, night mode asks the phone service for that hold, re-sends it about once a minute and releases it at the end of the window or when the daemon stops. Phone is exempt by default, and added once to an older config, so nothing goes dark unasked |
 
 ## Changing a patch or moving a pin
 

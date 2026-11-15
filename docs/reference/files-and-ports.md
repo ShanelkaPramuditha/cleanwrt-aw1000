@@ -19,7 +19,7 @@ creates; nothing is a guess.
 | `/etc/config/qmodem_sip` | the SIP service's package, edited on the AWvoice page | the network phone's account and media socket |
 | `/etc/config/uhttpd` | OpenWrt, extended by this image | the admin server, and the plain listener that serves a provisioning file |
 | `/etc/config/{network,wireless,system,dropbear,firewall}` | OpenWrt | the usual four, with this image's defaults |
-| `/etc/config/{fstab,irqbalance,minidlna,p910nd,qmodem_ttl,samba4,syncthing,watchcat}` | this image | the opt-in apps, shipped off or inert. See [first-boot defaults](uci-defaults.md) |
+| `/etc/config/{fstab,irqbalance,minidlna,qmodem_ttl,samba4,syncthing,watchcat}` | this image | the opt-in apps, shipped off or inert. See [first-boot defaults](uci-defaults.md) |
 | `/etc/apk/world` | `96-cw-apk-world-pin`, on every boot | which packages are pinned to an exact version and which may upgrade |
 
 ## The phone port's data
@@ -91,7 +91,6 @@ Nothing below is open unless the row says it is on by default.
 | 8384 | TCP | no (Syncthing ships disabled) | Syncthing's own web interface, bound to all addresses when enabled — set a password before you turn it on |
 | 8200 | TCP/UDP | no (miniDLNA ships disabled) | the media server, on the LAN bridge when enabled |
 | 139, 445 | TCP | the Samba daemon starts | one share, `guest_ok='no'`, so nothing is reachable until you add users |
-| 515 | TCP | no (p910nd ships disabled) | the USB printer share |
 
 !!! info "What this means for a scan of your network"
     A new router with nothing switched on exposes: the web server on 80 and 443, the provisioning

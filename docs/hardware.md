@@ -33,7 +33,7 @@ has further background on the device.
 
 The router has indicator LEDs for power, Wi-Fi, 5G, signal, internet and phone. CleanWRT
 drives the first five; see [Front-panel LEDs](leds.md). The phone LED belongs to
-[AWvoice](awvoice.md) and is left alone by the LED app.
+[AWvoice](awvoice.md); the LED app's night mode can ask AWvoice to keep it dark.
 
 ## The phone port
 

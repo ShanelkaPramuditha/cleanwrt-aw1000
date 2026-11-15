@@ -34,7 +34,6 @@ switch.
 | Syncthing | Services → Syncthing | Off | folder sync with your phone and PC ([web apps](features/web-apps.md)) |
 | qBittorrent | Services → qBittorrent | Off | download client with its own web interface ([web apps](features/web-apps.md)) |
 | File Manager | Tools → File Manager | On | browse and edit router files |
-| Printer server (p910nd) | Services → p910nd | Off | share a USB printer |
 | Bandwidth Monitor | Tools → Bandwidth Monitor | On | traffic per device |
 | vnStat | Statistics → vnStat | On | traffic history, monthly totals |
 | SQM QoS | Network → SQM QoS | Off (set your speeds) | fix bufferbloat |

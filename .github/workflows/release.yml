@@ -82,12 +82,13 @@ jobs:
           set -eu
           mkdir dl
           gh release download "$TAG" --dir dl --pattern '*.bin' --pattern '*.ubi' --pattern '*.itb' \
-            --pattern 'sha256sums.cw' --pattern 'profiles.json' --pattern 'provenance.tar.gz'
+            --pattern 'sha256sums.cw' --pattern 'profiles.json' --pattern 'provenance.tar.gz' \
+            --pattern 'key-build.pub'
           cd dl
           for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' \
                      '*arcadyan_aw1000-squashfs-factory.ubi' \
                      '*arcadyan_aw1000-initramfs-uImage.itb' \
-                     sha256sums.cw profiles.json provenance.tar.gz; do
+                     sha256sums.cw profiles.json provenance.tar.gz key-build.pub; do
             compgen -G "$pat" > /dev/null || { echo "::error::the draft has no file matching $pat"; exit 1; }
           done
           grep -v 'cw-release-provenance' sha256sums.cw | sha256sum -c -

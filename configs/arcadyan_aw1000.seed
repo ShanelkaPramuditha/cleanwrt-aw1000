@@ -115,7 +115,8 @@ CONFIG_PACKAGE_kmod-usb-acm=y
 # ── USB tethering / backup-WAN sources (multi-WAN; pairs with mwan3 below) ────
 # Use a phone / second USB modem / USB ethernet NIC as a failover or alternate
 # WAN, so internet survives a 5G outage or data-cap.
-CONFIG_PACKAGE_kmod-usb-ohci=y
+# kmod-usb-ohci is not selected: the IPQ8074's USB controllers are DWC3 xHCI, which serve
+# low- and full-speed devices themselves; there is no OHCI controller for it to drive.
 CONFIG_PACKAGE_kmod-usb-net-rndis=y
 CONFIG_PACKAGE_kmod-usb-net-ipheth=y
 CONFIG_PACKAGE_kmod-usb-net-asix-ax88179=y
@@ -395,7 +396,7 @@ CONFIG_PACKAGE_luci-app-minidlna=y
 #                  luci-app-filemanager is a proper full-page manager.
 #   syncthing = P2P folder sync (phone/PC <-> /mnt) - own web UI :8384; the
 #               LuCI switch is luci-app-syncthing.
-#   p910nd    = USB printer share (auto-detects a plugged printer).
+#   p910nd    = NOT in the build (the USB printer share): `apk add p910nd luci-app-p910nd`.
 CONFIG_PACKAGE_samba4-server=y
 CONFIG_PACKAGE_qbittorrent=y
 CONFIG_PACKAGE_luci-app-qbittorrent=y
@@ -417,8 +418,6 @@ CONFIG_PACKAGE_luci-app-filemanager=y
 CONFIG_PACKAGE_syncthing=y
 # luci-app-syncthing: the LuCI on/off switch (cwfeed, original CleanWRT code)
 CONFIG_PACKAGE_luci-app-syncthing=y
-CONFIG_PACKAGE_p910nd=y
-CONFIG_PACKAGE_luci-app-p910nd=y
 
 # ── Performance ──────────────────────────────────────────────────────────────
 # irqbalance spreads modem/wifi/ethernet IRQs across the 4 cores (throughput).

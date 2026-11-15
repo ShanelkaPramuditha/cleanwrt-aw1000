@@ -24,10 +24,18 @@ description: "What is new in each CleanWRT release for the Arcadyan AW1000."
 - **Passwall, Passwall 2, HomeProxy, AdGuard Home and Adblock are gone.** Their feeds, packages,
   cores (xray-core, sing-box, hysteria, naiveproxy, ipt2socks, microsocks, dns2socks and others)
   and first-boot files are no longer in the image; Nikki is the proxy app.
+- **Night mode can switch off the Phone LED.** *System → LED Management → Night mode* lists
+  **Phone** under *Keep on during night*; untick it and the phone lamp stays dark inside the night
+  window while the phone keeps working. It is ticked by default, so nothing changes until you
+  untick it.
+- **The p910nd printer share is gone.** Install it with `apk add p910nd luci-app-p910nd` if you
+  need it; a keep-settings upgrade removes its leftover config. The unused OHCI USB driver is gone
+  too: this board has no OHCI controller.
 - **The login page is centred.** The sign-in card sits in the middle of the screen instead of near
   the top.
 - **Signed release images.** Every release image carries the project's signature, and the image
-  holds the matching public key in `/etc/opkg/keys/`. OpenWrt 25.12 had silently stopped signing
+  holds the matching public key in `/etc/opkg/keys/`; every release also carries it as
+  `key-build.pub`. OpenWrt 25.12 had silently stopped signing
   images built with the key in place; the build now makes the certificate it needs.
 - **OpenClash is no longer built.** It was never in the image, only compiled for the optional
   `cw-opt` feed, which was never published. Nikki runs the same Clash profiles, so the OpenClash
