@@ -1914,6 +1914,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="On GitHub Actions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#releasing-build-once-publish-the-tested-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Releasing: build once, publish the tested files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2350,6 +2367,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="On GitHub Actions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#releasing-build-once-publish-the-tested-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Releasing: build once, publish the tested files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2561,12 +2595,17 @@ upstream feeds at build time, every one pinned to a commit.</p>
 </tr>
 <tr>
 <td><code>build</code></td>
-<td>by hand (<em>Actions → build → Run workflow</em>) or when a tag <code>v&lt;version&gt;</code> is pushed</td>
-<td>builds the image in the Docker environment, with a download cache and a compiler cache</td>
+<td>by hand (<em>Actions → build → Run workflow</em>)</td>
+<td>builds the image in the Docker environment, with a download cache and a compiler cache, and puts it in the private draft release</td>
+</tr>
+<tr>
+<td><code>release</code></td>
+<td>by hand (<em>Actions → release → Run workflow</em>)</td>
+<td>publishes the draft release as it is. It builds nothing</td>
 </tr>
 </tbody>
 </table>
-<p>The inputs of a manual run:</p>
+<p>The inputs of a manual build:</p>
 <table>
 <thead>
 <tr>
@@ -2592,25 +2631,29 @@ upstream feeds at build time, every one pinned to a commit.</p>
 <td>upload the images as a workflow artifact (public for a public repository)</td>
 </tr>
 <tr>
-<td><code>release</code></td>
-<td><code>none</code></td>
-<td>create a GitHub release <code>v&lt;CW_VERSION&gt;</code> on the built commit: <code>draft</code> (private until you publish it), <code>prerelease</code>, or <code>release</code> (published and marked latest). An <code>-rc</code> label is never marked latest</td>
+<td><code>draft</code></td>
+<td>on</td>
+<td>put the images in the private draft release <code>v&lt;CW_VERSION&gt;</code>. Needs the signing secrets</td>
 </tr>
 </tbody>
 </table>
 <p>A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.</p>
-<p>A tag <code>v&lt;version&gt;</code> is built by the same workflow, and its images go straight into a <strong>draft</strong>
-release: nothing is public and the site is not touched until that draft is published by hand.</p>
-<p>A manual run with <code>release</code> set does the same without pushing a tag first: the workflow creates the
-tag <code>v&lt;CW_VERSION&gt;</code> on the commit it built and uploads the images, the checksums and the provenance
-bundle to the release. The version is always <code>CW_VERSION</code> from <code>tools/cw-release-build.sh</code>, so bump
-it before a new release. The run stops before uploading anything when the tag already exists on
-another commit, or when that release is already published: a published release is never rewritten.
-Running again with a draft still open refreshes the draft, and publishes it if you chose
-<code>prerelease</code> or <code>release</code>.</p>
-<p>Every release run, a pushed tag included, is checked before the build starts and again before
-anything is uploaded:</p>
+<h3 id="releasing-build-once-publish-the-tested-files">Releasing: build once, publish the tested files<a class="headerlink" href="#releasing-build-once-publish-the-tested-files" title="Permanent link">&para;</a></h3>
+<p>A release never rebuilds anything: what goes public is exactly what you tested.</p>
+<ol>
+<li><strong>Build</strong> with <code>draft</code> on. The images, the checksums and the provenance bundle go into the draft
+   release <code>v&lt;CW_VERSION&gt;</code>, which only the repository's collaborators can see. Building the same
+   version again replaces the draft's files with the new build's.</li>
+<li><strong>Test</strong> the images from the draft (<em>Releases → the draft → Assets</em>) on a router.</li>
+<li><strong>Publish</strong> with the <code>release</code> workflow: choose <code>prerelease</code> or <code>release</code>. GitHub creates the tag
+   <code>v&lt;CW_VERSION&gt;</code> on the commit the draft was built from. A <code>release</code> is marked latest and goes on
+   the site, so the routers' upgrade notice offers it; a <code>prerelease</code> does neither. An <code>-rc</code> version
+   is always a prerelease.</li>
+</ol>
+<p>The version is always <code>CW_VERSION</code> from <code>tools/cw-release-build.sh</code> (and the seed), so bump it before
+the next release: a published release is never rewritten, and a build of a released version stops.</p>
+<p>The checks along the way:</p>
 <table>
 <thead>
 <tr>
@@ -2631,14 +2674,29 @@ anything is uploaded:</p>
 <td>that section becomes the release notes</td>
 </tr>
 <tr>
+<td>the version is not published yet, and no tag of it sits on another commit</td>
+<td>before the build</td>
+<td>a published release is never rewritten</td>
+</tr>
+<tr>
 <td>the package key is the one routers trust (<code>tools/cw-check-release-keys.sh</code>)</td>
 <td>inside the build</td>
 <td>the same check <code>opt_artifacts</code> runs</td>
 </tr>
 <tr>
-<td>the sysupgrade image carries a signature</td>
-<td>before the upload</td>
-<td>the same <code>fwtool</code> check the router runs before it flashes</td>
+<td>the sysupgrade image carries a valid signature by the release key</td>
+<td>before the draft upload</td>
+<td>the same verification the router runs before it flashes</td>
+</tr>
+<tr>
+<td>the draft was built from a commit on <code>main</code> that carries this <code>CW_VERSION</code></td>
+<td>before publishing</td>
+<td>an old or stray draft is never published</td>
+</tr>
+<tr>
+<td>every file is in the draft and matches <code>sha256sums.cw</code></td>
+<td>before publishing</td>
+<td>what goes public is what the build produced</td>
 </tr>
 </tbody>
 </table>
