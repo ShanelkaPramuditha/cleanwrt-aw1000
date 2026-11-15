@@ -297,14 +297,23 @@ jobs:
             echo "ERROR: tag $tag exists at $at, not at the built commit $GITHUB_SHA; bump CW_VERSION or delete the tag" >&2
             exit 1
           fi
-          # The sysupgrade image must carry a signature: the router's own check
-          # (/lib/upgrade/fwtool.sh) runs this same fwtool call and refuses an image without one.
-          # fwtool is the tree's host build, run in the builder image it was compiled in.
+          # The sysupgrade image must carry a valid signature by the release key: this is the
+          # verification the router itself runs (/lib/upgrade/fwtool.sh, fwtool_check_signature),
+          # against keys-release/key-build.pub. Proving only that some signature is attached is
+          # not enough: an image with a certificate but no signature passes that.
+          # fwtool, ucert and usign are the tree's host builds, run in the builder image they were
+          # compiled in; ucert calls usign by name, hence the PATH.
           for img in dist/*-squashfs-sysupgrade.bin; do
-            docker run --rm -v /mnt/cw/openwrt:/build:ro -v "$PWD/dist":/dist:ro cleanwrt-builder \
-              sh -c 'sig=$(mktemp) && /build/staging_dir/host/bin/fwtool -q -s "$sig" "/dist/$1" && [ -s "$sig" ]' _ "$(basename "$img")" ||
-              { echo "ERROR: $img carries no signature - check the USIGN_KEY_BUILD secrets" >&2; exit 1; }
-            echo "signed: $img"
+            docker run --rm -v /mnt/cw/openwrt:/build:ro -v "$PWD/dist":/dist:ro -v "$PWD/keys-release":/keys:ro cleanwrt-builder \
+              sh -ec '
+                export PATH=/build/staging_dir/host/bin:$PATH
+                k=$(mktemp -d); c=$(mktemp)
+                cp /keys/key-build.pub "$k/$(usign -F -p /keys/key-build.pub)"
+                fwtool -q -s "$c" "/dist/$1"
+                fwtool -q -T -s /dev/null "/dist/$1" | ucert -V -q -m - -c "$c" -P "$k"
+              ' _ "$(basename "$img")" ||
+              { echo "ERROR: $img has no valid signature by keys-release/key-build.pub - check the USIGN_KEY_BUILD secrets" >&2; exit 1; }
+            echo "signature verified: $img"
           done
           # What changed: the docs/changelog.md section of this version, minus its heading.
           # Links between doc pages are relative there; on the release page they point at the site.

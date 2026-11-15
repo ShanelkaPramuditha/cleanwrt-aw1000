@@ -541,8 +541,30 @@ fi
 #     keys-release/ (managed by tools/cw-sign-keys.sh), stage it at the tree
 #     root - the OpenWrt build then embeds a usign signature into every image
 #     via fwtool. No keys = unsigned build (local test builds).
+#     append-metadata (include/image-commands.mk) signs only when key-build.ucert sits beside
+#     the key too, and on an apk build nothing creates it: base-files runs `ucert -I` in its
+#     opkg branch only. Without this step every image came out unsigned with the key in place.
+#     The certificate is made fresh from the staged key on every build: one left in the tree
+#     can belong to another key.
 if [ -f "$REPO/keys-release/key-build" ]; then
     sh "$REPO/tools/cw-sign-keys.sh" --install "$PWD"
+    if [ ! -x staging_dir/host/bin/ucert ] || [ ! -x staging_dir/host/bin/usign ]; then
+        echo "== image signing: building the ucert host tool (with usign) =="
+        make tools/install -j"$(nproc)"
+        make package/ucert/host/compile -j"$(nproc)"
+    fi
+    rm -f key-build.ucert
+    # ucert runs `usign` by name: inside make the host bin dir is on PATH, here it is not
+    PATH="$PWD/staging_dir/host/bin:$PATH" staging_dir/host/bin/ucert -I -c key-build.ucert -p key-build.pub -s key-build
+    [ -s key-build.ucert ] || { echo "ERROR: ucert made no key-build.ucert - images would ship unsigned" >&2; exit 1; }
+    # The router checks a signed image against /etc/opkg/keys (lib/upgrade/fwtool.sh), and the
+    # apk build installs no key there. It only checks when ucert is installed on the router,
+    # which this image does not do; the key is there so that a router that adds it accepts
+    # this release's images instead of refusing them.
+    fp=$(staging_dir/host/bin/usign -F -p key-build.pub)
+    mkdir -p files/etc/opkg/keys
+    cp key-build.pub "files/etc/opkg/keys/$fp"
+    echo "== image signing: key $fp, certificate made, public key in /etc/opkg/keys =="
 fi
 
 # 5c. Feed key continuity: the cw-opt feed index is signed with
