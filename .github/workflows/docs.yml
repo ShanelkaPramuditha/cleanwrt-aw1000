@@ -101,10 +101,11 @@ jobs:
           sh tools/cw-gh-pages.sh commit ../site "Docs: $GITHUB_SHA"
 
   versions:
-    # Publishing a release is the gate: the tag builds a draft, the image is checked, and only
-    # then does the release go public and the site say the version exists - the router's upgrade
-    # notice reads .versions.json there. Dispatch repeats this half for a release whose event
-    # was missed or failed.
+    # Publishing a release is the gate: the build puts the image in a draft, it is tested, and
+    # only then does the release go public and the site say the version exists - the router's
+    # upgrade notice reads .versions.json there. The release workflow starts this by dispatch
+    # (its publish, made with the workflow token, raises no `release` event); a release
+    # published by hand on GitHub raises the event. Dispatch also repeats a missed update.
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
     runs-on: ubuntu-24.04
     timeout-minutes: 10

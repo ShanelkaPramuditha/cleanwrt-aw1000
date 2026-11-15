@@ -36,40 +36,48 @@ The build needs nothing but the repository.
 | Workflow | When | What it does |
 |---|---|---|
 | `check` | every push and pull request | shell syntax, the version label, that the pins resolve, and a **config check**: feeds, patches, pins, defconfig and the seed checks, without compiling |
-| `build` | by hand (*Actions → build → Run workflow*) or when a tag `v<version>` is pushed | builds the image in the Docker environment, with a download cache and a compiler cache |
+| `build` | by hand (*Actions → build → Run workflow*) | builds the image in the Docker environment, with a download cache and a compiler cache, and puts it in the private draft release |
+| `release` | by hand (*Actions → release → Run workflow*) | publishes the draft release as it is. It builds nothing |
 
-The inputs of a manual run:
+The inputs of a manual build:
 
 | Input | Default | Meaning |
 |---|---|---|
 | `clean` | off | rebuild every package |
 | `opt_artifacts` | off | also compile and verify the optional `cw-opt` feed |
 | `artifacts` | off | upload the images as a workflow artifact (public for a public repository) |
-| `release` | `none` | create a GitHub release `v<CW_VERSION>` on the built commit: `draft` (private until you publish it), `prerelease`, or `release` (published and marked latest). An `-rc` label is never marked latest |
+| `draft` | on | put the images in the private draft release `v<CW_VERSION>`. Needs the signing secrets |
 
 A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.
 
-A tag `v<version>` is built by the same workflow, and its images go straight into a **draft**
-release: nothing is public and the site is not touched until that draft is published by hand.
+### Releasing: build once, publish the tested files
 
-A manual run with `release` set does the same without pushing a tag first: the workflow creates the
-tag `v<CW_VERSION>` on the commit it built and uploads the images, the checksums and the provenance
-bundle to the release. The version is always `CW_VERSION` from `tools/cw-release-build.sh`, so bump
-it before a new release. The run stops before uploading anything when the tag already exists on
-another commit, or when that release is already published: a published release is never rewritten.
-Running again with a draft still open refreshes the draft, and publishes it if you chose
-`prerelease` or `release`.
+A release never rebuilds anything: what goes public is exactly what you tested.
 
-Every release run, a pushed tag included, is checked before the build starts and again before
-anything is uploaded:
+1. **Build** with `draft` on. The images, the checksums and the provenance bundle go into the draft
+   release `v<CW_VERSION>`, which only the repository's collaborators can see. Building the same
+   version again replaces the draft's files with the new build's.
+2. **Test** the images from the draft (*Releases → the draft → Assets*) on a router.
+3. **Publish** with the `release` workflow: choose `prerelease` or `release`. GitHub creates the tag
+   `v<CW_VERSION>` on the commit the draft was built from. A `release` is marked latest and goes on
+   the site, so the routers' upgrade notice offers it; a `prerelease` does neither. An `-rc` version
+   is always a prerelease.
+
+The version is always `CW_VERSION` from `tools/cw-release-build.sh` (and the seed), so bump it before
+the next release: a published release is never rewritten, and a build of a released version stops.
+
+The checks along the way:
 
 | Check | When | Why |
 |---|---|---|
 | the `USIGN_KEY_BUILD`, `USIGN_KEY_BUILD_PUB` and `APK_PRIVATE_KEY` secrets are set | before the build | an unsigned image is refused by the router's signature check, and a throw-away package key signs packages no router trusts |
 | `docs/changelog.md` has a `## <CW_VERSION>` section | before the build | that section becomes the release notes |
+| the version is not published yet, and no tag of it sits on another commit | before the build | a published release is never rewritten |
 | the package key is the one routers trust (`tools/cw-check-release-keys.sh`) | inside the build | the same check `opt_artifacts` runs |
-| the sysupgrade image carries a signature | before the upload | the same `fwtool` check the router runs before it flashes |
+| the sysupgrade image carries a valid signature by the release key | before the draft upload | the same verification the router runs before it flashes |
+| the draft was built from a commit on `main` that carries this `CW_VERSION` | before publishing | an old or stray draft is never published |
+| every file is in the draft and matches `sha256sums.cw` | before publishing | what goes public is what the build produced |
 
 The release notes are the changelog section under **What's new**, followed by a short **Files**
 paragraph. Links between doc pages in that section become links to the documentation site.

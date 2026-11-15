@@ -1,0 +1,142 @@
+name: release
+
+# Build once, promote. The build workflow (with `draft` on) puts its signed, checked images in
+# the private draft release v<CW_VERSION>; this workflow publishes exactly those files. It
+# builds nothing, so what goes public is byte for byte what was tested from the draft.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: "Publish the draft v<CW_VERSION> as (an -rc version is always a prerelease)"
+        type: choice
+        options:
+          - prerelease
+          - release
+        default: prerelease
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write   # publish the draft; GitHub creates the tag on its commit
+      actions: write    # start the site update (docs.yml): a release published with the
+                        # workflow token raises no `release` event for other workflows
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the ancestry check below reads the default branch's history
+
+      - name: The draft
+        id: draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAIN: ${{ github.event.repository.default_branch }}
+        run: |
+          set -eu
+          ver=$(sed -n 's/^CW_VERSION="\(.*\)"$/\1/p' tools/cw-release-build.sh)
+          [ -n "$ver" ] || { echo "::error::no CW_VERSION in tools/cw-release-build.sh"; exit 1; }
+          tag="v$ver"
+          state=$(gh release view "$tag" --json isDraft -q .isDraft 2>/dev/null || echo none)
+          case "$state" in
+            true) ;;
+            false) echo "::error::$tag is published already. Bump CW_VERSION and build a new draft"; exit 1 ;;
+            *) echo "::error::there is no draft $tag. Run the build workflow with 'draft' on first"; exit 1 ;;
+          esac
+          sha=$(gh release view "$tag" --json targetCommitish -q .targetCommitish)
+          echo "$sha" | grep -qxE '[0-9a-f]{40}' ||
+            { echo "::error::the draft $tag names '$sha', not a commit - rebuild it with the build workflow"; exit 1; }
+          # only a commit that is part of the default branch goes public
+          git merge-base --is-ancestor "$sha" "origin/$MAIN" ||
+            { echo "::error::the draft was built from $sha, which is not on $MAIN"; exit 1; }
+          # the draft's own commit must carry this version: a draft left over from before a
+          # version bump is not this release
+          dver=$(git show "$sha:tools/cw-release-build.sh" | sed -n 's/^CW_VERSION="\(.*\)"$/\1/p')
+          [ "$dver" = "$ver" ] ||
+            { echo "::error::the draft $tag was built from $sha, whose CW_VERSION is '$dver'"; exit 1; }
+          # an existing tag decides the commit GitHub publishes; it must be the draft's
+          at=$(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{c=$1} END{print c}')
+          if [ -n "$at" ] && [ "$at" != "$sha" ]; then
+            echo "::error::tag $tag exists at $at, but the draft was built from $sha"; exit 1
+          fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "draft $tag, built from $sha"
+
+      # The build verified the image signature before it uploaded anything. Here the files are
+      # checked again as they sit in the draft: all of them present, and each image still the
+      # bytes the build hashed into sha256sums.cw.
+      - name: The draft's files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.draft.outputs.tag }}
+        run: |
+          set -eu
+          mkdir dl
+          gh release download "$TAG" --dir dl --pattern '*.bin' --pattern '*.ubi' --pattern '*.itb' \
+            --pattern 'sha256sums.cw' --pattern 'profiles.json' --pattern 'provenance.tar.gz'
+          cd dl
+          for pat in '*arcadyan_aw1000-squashfs-sysupgrade.bin' \
+                     '*arcadyan_aw1000-squashfs-factory.ubi' \
+                     '*arcadyan_aw1000-initramfs-uImage.itb' \
+                     sha256sums.cw profiles.json provenance.tar.gz; do
+            compgen -G "$pat" > /dev/null || { echo "::error::the draft has no file matching $pat"; exit 1; }
+          done
+          grep -v 'cw-release-provenance' sha256sums.cw | sha256sum -c -
+          # the provenance bundle unpacks to the paths sha256sums.cw names
+          tar -xzf provenance.tar.gz
+          grep 'cw-release-provenance' sha256sums.cw | sha256sum -c --quiet -
+          echo "all files present and matching sha256sums.cw"
+
+      - name: Publish
+        id: pub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.draft.outputs.tag }}
+          SHA: ${{ steps.draft.outputs.sha }}
+          VERSION: ${{ steps.draft.outputs.version }}
+          KIND: ${{ inputs.kind }}
+        run: |
+          set -eu
+          # an -rc label is never offered as the latest stable release
+          case "$VERSION" in *-rc*) KIND=prerelease ;; esac
+          case "$KIND" in
+            prerelease) gh release edit "$TAG" --draft=false --prerelease ;;
+            release)    gh release edit "$TAG" --draft=false --prerelease=false --latest ;;
+            *) echo "::error::unknown kind '$KIND'"; exit 1 ;;
+          esac
+          # publishing created the tag on the draft's commit; prove it
+          at=$(git ls-remote --tags origin "refs/tags/$TAG" "refs/tags/$TAG^{}" | awk '{c=$1} END{print c}')
+          [ "$at" = "$SHA" ] || { echo "::error::tag $TAG points at '${at:-nothing}', expected $SHA"; exit 1; }
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          url=$(gh release view "$TAG" --json url -q .url)
+          {
+            echo "### $TAG published as $KIND"
+            echo "$url"
+            echo
+            echo "Commit \`$SHA\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "published $TAG as $KIND: $url"
+
+      # Only a full release goes on the site: the routers' upgrade notice reads the site's
+      # version list, and a prerelease is not offered to every router. docs.yml's `versions`
+      # job is the one that writes it; it is started here because the publish above, made with
+      # the workflow token, raises no `release` event it could react to.
+      - name: Site update
+        if: steps.pub.outputs.kind == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.draft.outputs.version }}
+          MAIN: ${{ github.event.repository.default_branch }}
+        run: |
+          set -eu
+          gh workflow run docs.yml --ref "$MAIN" -f version="$VERSION"
+          echo "site update started (Actions → docs) for $VERSION" | tee -a "$GITHUB_STEP_SUMMARY"

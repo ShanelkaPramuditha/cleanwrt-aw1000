@@ -15,17 +15,10 @@ on:
         description: "Upload the images as a workflow artifact (public repository: anyone signed in to GitHub can download it)"
         type: boolean
         default: false
-      release:
-        description: "Create a GitHub release v<CW_VERSION> on the built commit (draft = private until published by hand)"
-        type: choice
-        options:
-          - none
-          - draft
-          - prerelease
-          - release
-        default: none
-  push:
-    tags: ["v*"]
+      draft:
+        description: "Put the images in the private draft release v<CW_VERSION> (needs the signing secrets); publish it later with the release workflow"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -41,9 +34,10 @@ jobs:
   image:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
-    # A tag run, or a manual run with `release` set, uploads the images straight into a
-    # release from here: a workflow artifact is downloadable by anyone signed in, which
-    # would bypass the draft gate. A manual run with `release: none` stays read-only in effect.
+    # Build once, promote: a build with `draft` on puts its images in the private draft release
+    # v<CW_VERSION>, and the release workflow publishes exactly those files - nothing is rebuilt
+    # for a release. A draft and not a workflow artifact: an artifact of a public repository is
+    # downloadable by anyone signed in, a draft only by the repository's collaborators.
     permissions:
       contents: write
     outputs:
@@ -58,23 +52,16 @@ jobs:
           tag=$(sed -n 's/^OPENWRT_TAG="\(.*\)"$/\1/p' tools/cw-release-build.sh)
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          case "$GITHUB_REF" in
-            refs/tags/v*) [ "${GITHUB_REF#refs/tags/v}" = "$ver" ] || { echo "tag does not match CW_VERSION $ver"; exit 1; } ;;
-          esac
-          # what this run publishes: a pushed tag always makes a draft; a manual run says so itself
-          case "$GITHUB_REF" in
-            refs/tags/v*) mode=draft ;;
-            *) mode="${{ inputs.release }}"; [ -n "$mode" ] || mode=none ;;
-          esac
-          echo "release=$mode" >> "$GITHUB_OUTPUT"
-          echo "release mode: $mode"
+          echo "draft=${{ inputs.draft && 'true' || 'false' }}" >> "$GITHUB_OUTPUT"
 
-      # A release is checked before the two-hour build, not after it: it needs the signing
-      # keys (an unsigned image fails the router's signature check on sysupgrade, and a
-      # throw-away apk key signs a feed no router trusts) and a changelog section for its notes.
+      # A draft is checked before the two-hour build, not after it: it needs the signing keys
+      # (an unsigned image fails the router's signature check on sysupgrade, and a throw-away
+      # apk key signs a feed no router trusts), a changelog section for its notes, and a version
+      # that is not released yet.
       - name: Release checks
-        if: steps.ver.outputs.release != 'none'
+        if: steps.ver.outputs.draft == 'true'
         env:
+          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.ver.outputs.version }}
           HAVE_APK: ${{ secrets.APK_PRIVATE_KEY != '' }}
           HAVE_USIGN: ${{ secrets.USIGN_KEY_BUILD != '' && secrets.USIGN_KEY_BUILD_PUB != '' }}
@@ -85,6 +72,15 @@ jobs:
           [ "$HAVE_APK" = true ] || { echo "::error::a release needs the APK_PRIVATE_KEY secret (the package key routers trust)"; bad=1; }
           awk -v v="$VERSION" 'index($0, "## " v) == 1 && (length($0) == length(v) + 3 || substr($0, length(v) + 4, 1) == " ") { f = 1 } END { exit !f }' docs/changelog.md ||
             { echo "::error::docs/changelog.md has no '## $VERSION' section for the release notes"; bad=1; }
+          tag="v$VERSION"
+          if gh release view "$tag" --json isDraft -q .isDraft 2>/dev/null | grep -qx false; then
+            echo "::error::$tag is published already - bump CW_VERSION in tools/cw-release-build.sh and the seed"; bad=1
+          fi
+          # a tag that exists already decides the commit the release publishes; it must be this one
+          at=$(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{c=$1} END{print c}')
+          if [ -n "$at" ] && [ "$at" != "$GITHUB_SHA" ]; then
+            echo "::error::tag $tag exists at $at, not at this commit $GITHUB_SHA - bump CW_VERSION or delete the tag"; bad=1
+          fi
           exit "$bad"
 
       - name: Free disk space
@@ -185,7 +181,7 @@ jobs:
         env:
           CW_CCACHE: "1"
           CW_BUILD_OPT_ARTIFACTS: ${{ inputs.opt_artifacts && '1' || '0' }}
-          CW_REQUIRE_RELEASE_KEYS: ${{ ((inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') || steps.ver.outputs.release != 'none') && '1' || '0' }}
+          CW_REQUIRE_RELEASE_KEYS: ${{ ((inputs.opt_artifacts && secrets.APK_PRIVATE_KEY != '') || steps.ver.outputs.draft == 'true') && '1' || '0' }}
         run: |
           set -o pipefail
           flag=""
@@ -270,33 +266,17 @@ jobs:
       # draft (private until published by hand), prerelease, or release (marked latest).
       # The tag v<CW_VERSION> is created on the built commit when it does not exist yet; a tag
       # made with the workflow token starts no second run.
-      - name: Release
-        if: success() && steps.ver.outputs.release != 'none'
+      # The draft is the holding area: private, kept until deleted, and what the release
+      # workflow publishes. Each build of a version refreshes it; a published release is never
+      # touched (the site and the routers' upgrade notice point at those bytes).
+      - name: Draft release
+        if: success() && steps.ver.outputs.draft == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.ver.outputs.version }}
-          MODE: ${{ steps.ver.outputs.release }}
         run: |
           set -eu
           tag="v$VERSION"
-          # an -rc label is never offered as the latest stable release
-          rc=0
-          case "$VERSION" in *-rc*) rc=1 ;; esac
-          case "$MODE:$rc" in
-            draft:0)              flags="--draft" ;;
-            draft:1)              flags="--draft --prerelease" ;;
-            prerelease:*|release:1) flags="--prerelease" ;;
-            release:0)            flags="--latest" ;;
-            *) echo "ERROR: unknown release mode '$MODE'" >&2; exit 1 ;;
-          esac
-          # A tag that already exists must name the commit just built: a release whose
-          # images came from another commit would carry the wrong provenance. The peeled
-          # line (^{}) is the commit of an annotated tag; a lightweight tag has only the first.
-          at=$(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{c=$1} END{print c}')
-          if [ -n "$at" ] && [ "$at" != "$GITHUB_SHA" ]; then
-            echo "ERROR: tag $tag exists at $at, not at the built commit $GITHUB_SHA; bump CW_VERSION or delete the tag" >&2
-            exit 1
-          fi
           # The sysupgrade image must carry a valid signature by the release key: this is the
           # verification the router itself runs (/lib/upgrade/fwtool.sh, fwtool_check_signature),
           # against keys-release/key-build.pub. Proving only that some signature is attached is
@@ -337,20 +317,24 @@ jobs:
             echo "the package manifest of this build. Built from commit $GITHUB_SHA."
           } > notes.md
           if gh release view "$tag" >/dev/null 2>&1; then
-            # a re-run refreshes the draft; a published release stays as it was
-            # published (the site and the LuCI check point at those bytes)
             [ "$(gh release view "$tag" --json isDraft -q .isDraft)" = "true" ] ||
-              { echo "ERROR: $tag is published already; a tag build never rewrites it" >&2; exit 1; }
+              { echo "ERROR: $tag is published already; a build never rewrites it - bump CW_VERSION" >&2; exit 1; }
+            # the draft holds this build's files and nothing else: a file an earlier build left
+            # under another name goes, the rest are replaced
+            gh release view "$tag" --json assets -q '.assets[].name' | while read -r a; do
+              [ -e "dist/$a" ] || { echo "removing stale asset $a"; gh release delete-asset "$tag" "$a" --yes; }
+            done
             gh release upload "$tag" dist/* --clobber
-            gh release edit "$tag" --notes-file notes.md
-            # a manual run that asks for more than a draft publishes the refreshed draft
-            # shellcheck disable=SC2086
-            [ "$MODE" = draft ] || gh release edit "$tag" --draft=false $flags
+            gh release edit "$tag" --target "$GITHUB_SHA" --notes-file notes.md
           else
-            # shellcheck disable=SC2086
-            gh release create "$tag" dist/* $flags --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md
+            gh release create "$tag" dist/* --draft --target "$GITHUB_SHA" --title "CleanWRT $VERSION" --notes-file notes.md
           fi
-          echo "release $tag: $MODE ($(gh release view "$tag" --json url -q .url))"
+          {
+            echo "### Draft $tag refreshed"
+            echo "Built from \`$GITHUB_SHA\`. Test the images from the draft, then publish them with"
+            echo "**Actions → release → Run workflow**."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "draft $tag: $(gh release view "$tag" --json url -q .url)"
 
       - name: Upload build files
         if: success() && inputs.artifacts
