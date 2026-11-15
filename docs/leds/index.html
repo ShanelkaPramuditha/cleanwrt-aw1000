@@ -70,7 +70,7 @@
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "Front-panel LEDs", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/leds/"}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Front-panel LEDs", "description": "What each LED on the Arcadyan AW1000 shows with CleanWRT: 5G SA or NSA, signal quality from RSRP, the internet probe, night mode and every setting.", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/leds/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do the front-panel LEDs of the Arcadyan AW1000 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Power is always on. Wi-Fi is on while a radio is up. The 5G lamp shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes. Phone belongs to the phone service and is shown here read-only."}}, {"@type": "Question", "name": "How do I turn off the AW1000 LEDs at night?", "acceptedAnswer": {"@type": "Answer", "text": "Enable night mode in System → LED Management. The default window is 22:30 to 06:00 and a window past midnight works. Remove a lamp from the keep-on list to switch it off inside the window. The hardware cannot dim, so a lamp is either off or on."}}, {"@type": "Question", "name": "Why is the 5G LED on my AW1000 off?", "acceptedAnswer": {"@type": "Answer", "text": "It lights for 5G only: off on 4G, 3G, no service, or an unknown type. If the signal lamp is off too, the daemon probably cannot read the modem on its AT port — logread -e cw-led says which."}}, {"@type": "Question", "name": "Why is the internet LED off when my internet works?", "acceptedAnswer": {"@type": "Answer", "text": "The lamp mirrors a probe, not your traffic. If the probe address is blocked it stays off. Change the probe URL, or switch the check to the default-route mode."}}, {"@type": "Question", "name": "Does the LED daemon use the modem's data connection?", "acceptedAnswer": {"@type": "Answer", "text": "No. It reads the modem over an AT port with plain commands and writes lamps through sysfs. It stops working if that port is busy, which is why it is on a different port from QModem."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What do the front-panel LEDs of the Arcadyan AW1000 mean?", "acceptedAnswer": {"@type": "Answer", "text": "Power is always on. Wi-Fi is on while a radio is up. The 5G lamp shows the 5G type: solid blue for standalone, solid green for non-standalone, off for anything else. Signal is green, blue or red for good, average or poor. Internet is on while a real connectivity check passes. Phone belongs to the phone service and is shown here read-only."}}, {"@type": "Question", "name": "How do I turn off the AW1000 LEDs at night?", "acceptedAnswer": {"@type": "Answer", "text": "Enable night mode in System → LED Management. The default window is 22:30 to 06:00 and a window past midnight works. Remove a lamp, the phone lamp included, from the keep-on list to switch it off inside the window. The hardware cannot dim, so a lamp is either off or on."}}, {"@type": "Question", "name": "Why is the 5G LED on my AW1000 off?", "acceptedAnswer": {"@type": "Answer", "text": "It lights for 5G only: off on 4G, 3G, no service, or an unknown type. If the signal lamp is off too, the daemon probably cannot read the modem on its AT port — logread -e cw-led says which."}}, {"@type": "Question", "name": "Why is the internet LED off when my internet works?", "acceptedAnswer": {"@type": "Answer", "text": "The lamp mirrors a probe, not your traffic. If the probe address is blocked it stays off. Change the probe URL, or switch the check to the default-route mode."}}, {"@type": "Question", "name": "Does the LED daemon use the modem's data connection?", "acceptedAnswer": {"@type": "Answer", "text": "No. It reads the modem over an AT port with plain commands and writes lamps through sysfs. It stops working if that port is busy, which is why it is on a different port from QModem."}}]}</script>
 </head>
   
   
@@ -2485,7 +2485,7 @@ can watch the router's state without walking to it.</p>
 </div>
 <p>Two chips above the lamps say whether the daemon is running and whether the night window is open.
 Six tiles show the lamps. The sixth, <strong>Phone</strong>, is read-only: this app reports what the phone
-service owns but never writes it.</p>
+service owns but never writes it (night mode asks the phone service to hold it dark instead).</p>
 <div class="admonition info">
 <p class="admonition-title">About the screenshots</p>
 <p>These were taken from a real AW1000 running this firmware. The states in them belong to the
@@ -2600,7 +2600,7 @@ host</em>, which defaults to <code>1.1.1.1</code>.</p>
 </tr>
 <tr>
 <td>Keep on during night</td>
-<td>all five daemon-owned lamps are on the list, so nothing goes dark until you remove one</td>
+<td>all six lamps are on the list, so nothing goes dark until you remove one</td>
 </tr>
 </tbody>
 </table>
@@ -2608,10 +2608,14 @@ host</em>, which defaults to <code>1.1.1.1</code>.</p>
 until night mode is enabled. Entering the window forces every non-exempt lamp off; leaving it
 re-reads the modem and re-probes at once, so the panel is current again the minute the window closes.</p>
 <div class="admonition note">
-<p class="admonition-title">The phone lamp is not in the night list</p>
-<p>Night mode here does not touch the phone lamp, and it is not bound to the theme's night behaviour
-either. A line that must stay silent at night is a
-<a href="../awvoice/quiet-hours/">quiet hours</a> question, which is answered on the phone's own page.</p>
+<p class="admonition-title">The phone lamp at night</p>
+<p>The phone lamp belongs to the <a href="../awvoice/">phone service</a>, so night mode does not switch it
+itself: when <strong>Phone</strong> is off the keep-on list, it asks the phone service to hold the lamp dark
+inside the window, and to let it follow the line again at the end. The phone keeps working
+underneath: a call still rings, only the lamp stays off. The hold lives in the phone service's
+memory and is sent again about once a minute, so it survives a restart of either service; with
+the phone service stopped there is nothing to hold. A line that must stay <em>silent</em> at night is a
+<a href="../awvoice/quiet-hours/">quiet hours</a> question, answered on the phone's own page.</p>
 </div>
 <h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
 <p>Everything is on the page and stored in <code>/etc/config/cw-led</code>.</p>
@@ -2686,7 +2690,7 @@ either. A line that must stay silent at night is a
 <td>Night</td>
 <td><code>enabled</code>, <code>start</code>, <code>end</code>, <code>exempt</code></td>
 <td>Night mode</td>
-<td><code>0</code>, <code>22:30</code>, <code>06:00</code>, all five lamps</td>
+<td><code>0</code>, <code>22:30</code>, <code>06:00</code>, all six lamps (<code>power</code>, <code>wifi</code>, <code>fiveg</code>, <code>signal</code>, <code>internet</code>, <code>phone</code>)</td>
 <td>see <a href="#night-mode">night mode</a></td>
 </tr>
 <tr>
@@ -2871,7 +2875,7 @@ belongs to the <a href="../awvoice/">phone service</a> and is shown here read-on
 <details class="question">
 <summary>How do I turn off the AW1000 LEDs at night?</summary>
 <p>Enable night mode in <strong>System → LED Management</strong>. The default window is 22:30 to 06:00 and a
-window past midnight works. Remove a lamp from the keep-on list to switch it off inside the
+window past midnight works. Remove a lamp, the phone lamp included, from the keep-on list to switch it off inside the
 window. The hardware cannot dim, so a lamp is either off or on.</p>
 </details>
 <details class="question">

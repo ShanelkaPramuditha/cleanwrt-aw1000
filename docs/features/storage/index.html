@@ -2449,11 +2449,6 @@ listens on the LAN until you enable it. <strong>Set credentials before you enabl
 <td>DLNA on the LAN only, port 8200</td>
 </tr>
 <tr>
-<td>Printer share (p910nd)</td>
-<td><em>Services → p910nd</em></td>
-<td>raw port 9100 and mDNS</td>
-</tr>
-<tr>
 <td>Web file manager</td>
 <td><em>Tools → File Manager</em></td>
 <td>browse, edit, upload, delete, hex editor</td>
@@ -2535,9 +2530,9 @@ it does not re-scan on every reboot.</p>
 <td>downloads default to the first USB drive</td>
 </tr>
 <tr>
-<td>p910nd (printer)</td>
-<td><strong>off</strong></td>
-<td>when on, <code>/dev/usb/lp0</code>, advertised over mDNS as <code>CleanWRT USB printer</code></td>
+<td>p910nd (printer share)</td>
+<td><strong>not in the image</strong></td>
+<td><code>apk add p910nd luci-app-p910nd</code> if you need it</td>
 </tr>
 <tr>
 <td><code>hd-idle</code></td>
@@ -2579,11 +2574,6 @@ it does not re-scan on every reboot.</p>
 <tr>
 <td>8200</td>
 <td>miniDLNA</td>
-<td>off</td>
-</tr>
-<tr>
-<td>515</td>
-<td>p910nd</td>
 <td>off</td>
 </tr>
 <tr>

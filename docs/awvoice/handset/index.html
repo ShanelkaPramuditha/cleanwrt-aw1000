@@ -2729,7 +2729,9 @@ number this line is; nothing is ever dialled from it.</p>
 </tbody>
 </table>
 <p>The other five lamps on the panel belong to
-<a href="../../leds/">LED Management</a>, which does not touch this one while AWvoice is running.</p>
+<a href="../../leds/">LED Management</a>, which never writes this one. Its night mode can ask AWvoice to hold
+the lamp dark inside the night window (<code>ubus call awvoice indicator_dark</code>, memory only): the line
+works as usual underneath, and the lamp follows it again when the window ends.</p>
 <h2 id="settings-on-this-page">Settings on this page<a class="headerlink" href="#settings-on-this-page" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

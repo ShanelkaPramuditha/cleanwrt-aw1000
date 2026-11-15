@@ -2022,6 +2022,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#out-of-feed-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out-of-feed packages
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2475,6 +2486,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#out-of-feed-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out-of-feed packages
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2839,16 +2861,8 @@ than shipping a half-applied change.</p>
 <td>the <em>Firmware Version</em> row shows the release description alone. A detached-HEAD feed was stamping "LuCI (HEAD detached at …)" into a user-facing page</td>
 </tr>
 <tr>
-<td><code>0006-p910nd-menu-title-printer-server</code></td>
-<td>the menu title, from <code>p910nd - Printer server</code> to <code>Printer server</code></td>
-</tr>
-<tr>
 <td><code>0007-upgrade-check-cdn-no-asu</code></td>
 <td>the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is <code>shanelkapramuditha.github.io/cleanwrt-aw1000/.versions.json</code>, and the comparison counts every number of the label (<code>-R2.2</code>, <code>-SP1</code>), not only the OpenWrt base</td>
-</tr>
-<tr>
-<td><code>0008-p910nd-mdns-type-label</code></td>
-<td>the option label reads <code>mDNS type</code></td>
 </tr>
 <tr>
 <td><code>0009-filemanager-default-width</code></td>
@@ -2907,6 +2921,25 @@ than shipping a half-applied change.</p>
 <tr>
 <td><code>packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport</code></td>
 <td>the login card sits in the middle of the screen instead of 7vh from the top; on a screen shorter than the card the page scrolls from the top as before</td>
+</tr>
+</tbody>
+</table>
+<h3 id="out-of-feed-packages">Out-of-feed packages<a class="headerlink" href="#out-of-feed-packages" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>patch</th>
+<th>what it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>packages/awvoice-phoned/0001-indicator-dark-for-night-mode</code></td>
+<td>one ubus method, <code>awvoice indicator_dark {dark}</code>: a memory-only hold that keeps the phone LED dark while the line works underneath. Nothing is written to the phone's settings, and a restart clears it</td>
+</tr>
+<tr>
+<td><code>packages/luci-app-cw-led/0001-night-mode-phone-led</code></td>
+<td>Phone joins <em>Keep on during night</em>: outside the keep-on list, night mode asks the phone service for that hold, re-sends it about once a minute and releases it at the end of the window or when the daemon stops. Phone is exempt by default, and added once to an older config, so nothing goes dark unasked</td>
 </tr>
 </tbody>
 </table>
