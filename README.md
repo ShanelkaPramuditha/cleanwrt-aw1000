@@ -199,8 +199,7 @@ package feed.
 | A smaller image: Tailscale, Cloudflare Tunnel, Syncthing and qBittorrent are one `apk add` away; the project's signed cw-opt feed (qBittorrent, the Syncthing switch) is published by a new `feed` workflow and listed on every router | `configs/`, `tools/`, `files/etc/`, `.github/workflows/`, `docs/` |
 | Build once, publish the tested files: builds fill a private draft release (signature verified, notes from the changelog), and a separate `release` workflow publishes it without rebuilding | `.github/workflows/`, `docs/` |
 
-Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
-they fit.
+Everything else is upstream's work, unchanged. These changes are kept in this fork only.
 
 ## Thanks
 

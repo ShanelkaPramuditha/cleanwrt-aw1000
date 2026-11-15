@@ -21,7 +21,7 @@ Applies to: https://github.com/Pr0Luci/luci-app-cw-led.git
             @ a65586cf81aff771d17183405965b40112d7deea (pinned in configs/local-packages.pin)
 Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
             installed, with `patch -p1 --fuzz=0`.
-Upstream status: not submitted yet (the same author maintains both packages).
+Upstream status: not submitted (a local patch, kept in this repository only).
 
 --- a/luci-app-cw-led/htdocs/luci-static/resources/view/cw-led/settings.js
 +++ b/luci-app-cw-led/htdocs/luci-static/resources/view/cw-led/settings.js

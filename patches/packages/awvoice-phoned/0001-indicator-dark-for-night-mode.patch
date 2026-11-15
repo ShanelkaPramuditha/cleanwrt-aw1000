@@ -17,7 +17,7 @@ Applies to: https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice.git
             @ 30d492c044641fa5313f01238e6f42277a6a6dea (pinned in configs/local-packages.pin)
 Applied by: tools/cw-release-build.sh, on the pinned commit before the package is
             installed, with `patch -p1 --fuzz=0`.
-Upstream status: not submitted yet (the same author maintains both packages).
+Upstream status: not submitted (a local patch, kept in this repository only).
 
 --- a/awvoice-phoned/src/daemon/api.c
 +++ b/awvoice-phoned/src/daemon/api.c
