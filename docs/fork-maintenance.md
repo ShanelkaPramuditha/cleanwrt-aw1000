@@ -20,7 +20,7 @@ git remote set-url --push upstream DISABLED-do-not-push-to-upstream
 ```
 
 GitHub's *Compare & pull request* button on a fork picks **upstream** as the base. If you open a
-pull request at all, change the base repository to `ShanelkaPramuditha/cleanwrt-aw1000` first.
+pull request at all, change the base repository to `ShanelkaPramuditha/cleanwrt-aw1000-ng` first.
 
 ## Taking upstream's changes
 

@@ -7,4 +7,4 @@
 # Built and published by the `feed` workflow (tools/cw-publish-feed.sh) to the project site.
 # The build workflow refuses to build an image while this URL does not answer: a dead feed
 # entry would break `apk update` on every router.
-https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/packages.adb
+https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/feed/packages.adb

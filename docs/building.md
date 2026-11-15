@@ -93,7 +93,7 @@ You need a Linux machine (or a Linux VM) and Docker.
 git clone --depth 1 --branch v25.12.5 https://github.com/openwrt/openwrt.git openwrt
 docker build -t cleanwrt-builder docker/
 docker run --rm \
-  -v "$PWD/openwrt":/build -v "$PWD/cleanwrt-aw1000":/cleanwrt \
+  -v "$PWD/openwrt":/build -v "$PWD/cleanwrt-aw1000-ng":/cleanwrt \
   cleanwrt-builder /cleanwrt/tools/cw-release-build.sh /build --clean
 ```
 
@@ -175,7 +175,7 @@ than shipping a half-applied change.
 | patch | what it changes |
 |---|---|
 | `0001-status-firmware-version-drop-luci-suffix` | the *Firmware Version* row shows the release description alone. A detached-HEAD feed was stamping "LuCI (HEAD detached at …)" into a user-facing page |
-| `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `shanelkapramuditha.github.io/cleanwrt-aw1000/.versions.json`, and the comparison counts every number of the label (`-R2.2`, `-SP1`), not only the OpenWrt base |
+| `0007-upgrade-check-cdn-no-asu` | the newer-version notice: the wording says CleanWRT, the links point at this project's releases rather than the OpenWrt CDN, and the version feed is `shanelkapramuditha.github.io/cleanwrt-aw1000-ng/.versions.json`, and the comparison counts every number of the label (`-R2.2`, `-SP1`), not only the OpenWrt base |
 | `0009-filemanager-default-width` | the file manager's default width, 400 to 800 |
 
 ### Other feeds, and the OpenWrt tree itself

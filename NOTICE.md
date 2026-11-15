@@ -48,12 +48,13 @@ upstream's, unchanged.
 | 2026-11-15 | `.github/workflows/build.yml`, `.github/workflows/release.yml` | modified: every release carries the image signing public key, `key-build.pub` |
 | 2026-11-15 | `configs/arcadyan_aw1000.seed`, `tools/cw-release-build.sh`, `tools/cw-publish-feed.sh`, `files/etc/apk/repositories.d/`, `files/etc/uci-defaults/96-cw-apk-world-pin`, `.devcontainer/cw-dev.sh`, `docs/` | modified: Tailscale, Cloudflare Tunnel, Syncthing and qBittorrent leave the image; the cw-opt feed (qBittorrent, the Syncthing switch) is listed on every router |
 | 2026-11-15 | `.github/workflows/feed.yml`, `.github/workflows/build.yml` | added / modified: the `feed` workflow builds and publishes the cw-opt feed; a draft build refuses to start while the feed does not answer |
+| 2026-11-15 | `README.md`, `NOTICE.md`, `mkdocs.yml`, `feeds.conf.default`, `configs/arcadyan_aw1000.seed`, `tools/`, `files/etc/`, `patches/feeds/luci/0007-upgrade-check-cdn-no-asu.patch`, `.github/`, `.devcontainer/`, `feeds-src/cwfeed/README.md`, `docs/` | modified: the repository is renamed `cleanwrt-aw1000-ng`; every link, the site and feed addresses, and the router's version-check address follow it |
 | 2026-11-14 | `.github/workflows/build.yml` | modified: Go build cache (`tmp/go-build`) kept between CI runs |
 | 2026-11-14 | `.devcontainer/cw-dev.sh`, `.devcontainer/devcontainer.json` | modified: local builds skip the optional cw-opt feed set unless `CW_BUILD_OPT_ARTIFACTS=1` |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |
 
 For an image built from this fork, the corresponding source in [Source availability](#source-availability)
-is this fork at the matching tag, <https://github.com/ShanelkaPramuditha/cleanwrt-aw1000>, not
+is this fork at the matching tag, <https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng>, not
 upstream.
 
 ## Principal components

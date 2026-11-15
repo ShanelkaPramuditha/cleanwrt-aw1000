@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <a href="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
-  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.2--SP1-14b8a6?style=for-the-badge"></a>
-  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/ShanelkaPramuditha/cleanwrt-aw1000?style=for-the-badge&color=14b8a6"></a>
-  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/ShanelkaPramuditha/cleanwrt-aw1000/check.yml?style=for-the-badge&label=checks"></a>
+  <a href="https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/"><img alt="Documentation" src="https://img.shields.io/badge/docs-online-14b8a6?style=for-the-badge"></a>
+  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/releases"><img alt="Version" src="https://img.shields.io/badge/CleanWRT-25.12.5--R2.2--SP1-14b8a6?style=for-the-badge"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/ShanelkaPramuditha/cleanwrt-aw1000-ng?style=for-the-badge&color=14b8a6"></a>
+  <a href="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/ShanelkaPramuditha/cleanwrt-aw1000-ng/check.yml?style=for-the-badge&label=checks"></a>
 </p>
 
 # CleanWRT: OpenWrt for the Arcadyan AW1000
@@ -15,14 +15,14 @@
 > **This is a fork.** CleanWRT was created and is maintained by
 > [Pr0Luci](https://github.com/Pr0Luci) at
 > [Pr0Luci/cleanwrt-aw1000](https://github.com/Pr0Luci/cleanwrt-aw1000). This fork,
-> [ShanelkaPramuditha/cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000),
+> [ShanelkaPramuditha/cleanwrt-aw1000-ng](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng),
 > follows upstream and adds a few changes of its own, listed under
 > [Changes in this fork](#changes-in-this-fork). The fork is not affiliated with or endorsed by
 > the upstream project.
 >
 > The documentation, release and issue links below are this fork's own and describe this fork's
 > build. Report problems with an image built from this fork in
-> [this fork's issues](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues), not upstream.
+> [this fork's issues](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/issues), not upstream.
 
 CleanWRT is an independent build of **OpenWrt 25.12.5** for the **Arcadyan AW1000** 5G router
 (Qualcomm IPQ8072, Quectel RG500Q-EA modem). It is made for people who want the router to simply
@@ -77,19 +77,19 @@ checksums and a provenance bundle.
 > ```
 >
 > The `rootfs` partition must be **at least `0x08000000`** (128 MiB). If it shows up as `rootfs_bak`
-> instead, stop. Read the [MTD layout page](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/mtd-layout/).
+> instead, stop. Read the [MTD layout page](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/mtd-layout/).
 
 > [!IMPORTANT]
 > The very first install from the stock firmware needs a **serial console (UART)** and a TFTP
-> server. Read [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/installation/) and
-> [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/recovery/) before you start.
+> server. Read [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/installation/) and
+> [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/recovery/) before you start.
 
 ## Quick install
 
 If the router already runs OpenWrt, and `cat /proc/mtd` is fine:
 
 1. Download the `*-squashfs-sysupgrade.bin` from the
-   [Releases page](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases) and check it:
+   [Releases page](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/releases) and check it:
 
    ```sh
    sha256sum -c sha256sums.cw --ignore-missing
@@ -122,19 +122,19 @@ If the router already runs OpenWrt, and `cat /proc/mtd` is fine:
 
 ## Documentation
 
-Everything is on the documentation site: **https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/**
+Everything is on the documentation site: **https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/**
 
 | Page | What is in it |
 |---|---|
-| [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/installation/) | UART + TFTP for the first install, `sysupgrade` afterwards |
-| [MTD layout](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/mtd-layout/) | what must fit, and how to check your router |
-| [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/recovery/) | failsafe, bootloader recovery, the way back |
-| [AWvoice](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/awvoice/) | the phone port, flash codes, safety |
-| [The 5G modem](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/modem/) | QModem, signal, SMS, TTL, modem firmware |
-| [Front-panel LEDs](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/leds/) | what every LED shows, night mode, settings |
-| [What is included](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/included/) | every app, where to find it, its default state |
-| [Build from source](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/building/) | GitHub Actions, Docker, pins, signing |
-| [FAQ](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/faq/) | known limits and common questions |
+| [Installation](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/installation/) | UART + TFTP for the first install, `sysupgrade` afterwards |
+| [MTD layout](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/mtd-layout/) | what must fit, and how to check your router |
+| [Recovery](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/recovery/) | failsafe, bootloader recovery, the way back |
+| [AWvoice](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/awvoice/) | the phone port, flash codes, safety |
+| [The 5G modem](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/modem/) | QModem, signal, SMS, TTL, modem firmware |
+| [Front-panel LEDs](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/leds/) | what every LED shows, night mode, settings |
+| [What is included](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/included/) | every app, where to find it, its default state |
+| [Build from source](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/building/) | GitHub Actions, Docker, pins, signing |
+| [FAQ](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/faq/) | known limits and common questions |
 
 ## How it is built
 
@@ -152,24 +152,24 @@ docker run --rm -v "$PWD/openwrt":/build -v "$PWD":/cleanwrt \
 ```
 
 `CW_CHECK_ONLY=1` runs every check and stops before compiling. See the
-[build page](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/building/) for signing and the optional
+[build page](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/building/) for signing and the optional
 package feed.
 
 ## The parts
 
 | Repository | What it is |
 |---|---|
-| [cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000) | this repository (fork of [upstream](https://github.com/Pr0Luci/cleanwrt-aw1000)): configuration, patches, overlay, workflows, documentation |
+| [cleanwrt-aw1000](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng) | this repository (fork of [upstream](https://github.com/Pr0Luci/cleanwrt-aw1000)): configuration, patches, overlay, workflows, documentation |
 | [AWvoice](https://github.com/Pr0Luci/openwrt-aw1000-voice-awvoice) | the phone port: kernel module, daemon and LuCI page |
 | [luci-app-cw-led](https://github.com/Pr0Luci/luci-app-cw-led) | the front-panel LED daemon and its page |
 | [luci-theme-footstrap](https://github.com/VizzleTF/luci-theme-footstrap) | the web interface: the theme the image selects |
 
 ## Help and contributions
 
-- A bug or a question: open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues) and fill in
+- A bug or a question: open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/issues) and fill in
   the form. Please never paste passwords, keys or full IMEI/IMSI numbers.
 - A fix or an improvement: open a pull request. `main` is protected, the checks must pass, and
-  changes are squash-merged. See [Contributing](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/contributing/).
+  changes are squash-merged. See [Contributing](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/contributing/).
 - A mistake in the docs: every page has an *Edit this page* button.
 
 ## Changes in this fork
@@ -232,4 +232,4 @@ licences.
 > [!NOTE]
 > **QModem** carries an added non-commercial clause. CleanWRT is free of charge and is not sold,
 > but if you deploy it in a business, for an ISP or in a paid service, read QModem's licence first.
-> See [Licence and notices](https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/licence/).
+> See [Licence and notices](https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs/licence/).

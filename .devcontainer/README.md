@@ -10,7 +10,7 @@ matching your host uid. The **parent** folder is mounted at `/workspaces/cleanwr
 
 ```
 cleanwrt/
-├── cleanwrt-aw1000/        this repo (the working project)
+├── cleanwrt-aw1000-ng/     this repo (the working project; any folder name works)
 ├── aw1000-feed/            reference only, read-only in the editor
 ├── openwrt/                OpenWrt tree at the pinned tag (cw-dev tree)
 ├── out/                    build logs and collected images
@@ -24,7 +24,7 @@ It's an AW1000 package feed for the `ppe-nss` OpenWrt tree. It's here only to re
 comparison: the build doesn't use it and the image contains none of its code. Its packages keep
 their own licences (`PKG_LICENSE`, GPL-2.0 / GPL-2.0-only).
 
-1. Open `cleanwrt-aw1000` in VS Code → **Dev Containers: Reopen in Container**.
+1. Open this repository's folder (`cleanwrt-aw1000-ng` for a fresh clone) in VS Code → **Dev Containers: Reopen in Container**.
    On Windows with Docker inside WSL, open it **from WSL first** (`code .` in the WSL
    shell, or **WSL: Connect to WSL** → Open Folder; the status bar shows `WSL: Ubuntu`).
    Opening the `\\wsl.localhost\...` path from a plain Windows window makes VS Code pipe its

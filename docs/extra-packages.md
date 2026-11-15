@@ -34,7 +34,7 @@ apk update
 apk add qbittorrent luci-app-qbittorrent
 ```
 
-The feed lives at `https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/` and is listed in
+The feed lives at `https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/feed/` and is listed in
 `/etc/apk/repositories.d/cw-opt.list`. Its index is signed with the project's key, which every
 image trusts (`/etc/apk/keys/public-key.pem`), so `apk` refuses a feed signed with anything else.
 The feed also carries the community packages the image is built from (QModem, 3ginfo-lite and

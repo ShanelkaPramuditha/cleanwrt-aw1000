@@ -11,7 +11,7 @@ Improvements are welcome: fixes, documentation, test reports and package suggest
 
 See [Repositories](repositories.md) for which repository an issue belongs in.
 
-Open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues). Include:
+Open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/issues). Include:
 
 - the CleanWRT version (`cat /etc/openwrt_release`),
 - what you expected and what happened,
@@ -29,8 +29,8 @@ Open an [issue](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues). I
 3. Pull requests are merged with **squash merge**, and the branch is deleted afterwards.
 
 ```sh
-git clone https://github.com/ShanelkaPramuditha/cleanwrt-aw1000.git
-cd cleanwrt-aw1000
+git clone https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng.git
+cd cleanwrt-aw1000-ng
 git checkout -b my-change
 # edit, then:
 git commit -am "Short description of the change"

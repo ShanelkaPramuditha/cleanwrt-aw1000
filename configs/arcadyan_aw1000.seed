@@ -45,9 +45,9 @@ CONFIG_VERSION_MANUFACTURER="CleanWRT"
 # Public identity URLs (resolved 2026-10-06 - the GitHub public mirror).
 # NOTE: like all VERSION_*, defconfig drops these; the enforcement is the
 # cfg_enable block in tools/cw-release-build.sh (kept in sync).
-CONFIG_VERSION_HOME_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000"
-CONFIG_VERSION_BUG_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"
-CONFIG_VERSION_SUPPORT_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/issues"
+CONFIG_VERSION_HOME_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng"
+CONFIG_VERSION_BUG_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/issues"
+CONFIG_VERSION_SUPPORT_URL="https://github.com/ShanelkaPramuditha/cleanwrt-aw1000-ng/issues"
 
 # ── Target ──────────────────────────────────────────────────────────────────
 CONFIG_TARGET_qualcommax=y

@@ -314,7 +314,7 @@ jobs:
           done
           # What changed: the docs/changelog.md section of this version, minus its heading.
           # Links between doc pages are relative there; on the release page they point at the site.
-          site="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs"
+          site="https://shanelkapramuditha.github.io/cleanwrt-aw1000-ng/docs"
           awk -v v="$VERSION" '
             $0 ~ "^## " { if (on) exit; if (index($0, "## " v) == 1 && (length($0) == length(v) + 3 || substr($0, length(v) + 4, 1) == " ")) { on = 1; next } }
             on' docs/changelog.md |
