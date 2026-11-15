@@ -52,6 +52,7 @@ upstream's, unchanged.
 | 2026-11-15 | `docs/install-apps.md`, `mkdocs.yml`, `docs/` | added: a step-by-step guide to installing and setting up the optional apps |
 | 2026-11-15 | `files/etc/config/qbittorrent`, `files/etc/uci-defaults/53-cw-qbittorrent-port` | added: qBittorrent's web UI on 8081, off the provisioning listener's 8080, for new installs and upgraded configurations |
 | 2026-11-15 | `files/etc/uci-defaults/95-cw-drop-removed-apps`, `docs/install-apps.md`, `docs/` | modified: AdGuard Home and p910nd settings are kept for a reinstall; dnsmasq returns to port 53 while AdGuard Home is not installed; AdGuard Home install and setup guide |
+| 2026-11-15 | `tools/cw-release-build.sh`, `.github/workflows/check.yml` | modified: source downloads retry up to three times (GitHub rate limits on shared runners), and the check judges by make's result instead of mirror messages that precede a successful fallback |
 | 2026-11-14 | `.github/workflows/build.yml` | modified: Go build cache (`tmp/go-build`) kept between CI runs |
 | 2026-11-14 | `.devcontainer/cw-dev.sh`, `.devcontainer/devcontainer.json` | modified: local builds skip the optional cw-opt feed set unless `CW_BUILD_OPT_ARTIFACTS=1` |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |

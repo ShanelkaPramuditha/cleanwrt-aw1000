@@ -591,7 +591,16 @@ if [ -d "$OUT_DIR" ]; then
     rm -rf "$OUT_DIR/cw-release-provenance" ||
         { echo "ERROR: cannot remove the previous $OUT_DIR/cw-release-provenance" >&2; exit 1; }
 fi
-make download -j"$(nproc)"
+# Up to three passes: a source fetched from GitHub goes through its API first, and a shared CI
+# runner's address often hits the anonymous rate limit, or a clone drops mid-transfer. A later
+# pass fetches only what is still missing, and every file is still checked against its hash.
+dl_ok=0
+for attempt in 1 2 3; do
+    if make download -j"$(nproc)"; then dl_ok=1; break; fi
+    echo "== download pass $attempt failed (network or GitHub rate limit) - retrying the missing sources =="
+    [ "$attempt" -lt 3 ] && sleep $((attempt * ${CW_GIT_RETRY_SLEEP:-30}))
+done
+[ "$dl_ok" = 1 ] || { echo "ERROR: sources could not be downloaded after 3 passes" >&2; exit 1; }
 rc=0
 make -j"$(nproc)" || rc=$?
 echo "-- world rc=$rc --"

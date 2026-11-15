@@ -126,11 +126,23 @@ jobs:
       - name: Download all sources
         if: steps.chg.outputs.run == 'true'
         run: |
+          # make's own exit status decides, not the log text: "Download failed" and "No more
+          # mirrors" are printed for every package that is not on the OpenWrt mirrors, before its
+          # GitHub fallback succeeds. Up to three passes, because a GitHub source goes through the
+          # API first and a shared runner often hits the anonymous rate limit; a later pass fetches
+          # only what is missing, and every file is still checked against its hash.
           docker run --rm -v /mnt/cw/openwrt:/build cleanwrt-builder bash -c '
             cd /build
-            make download -j4 2>&1 | tee download.log
-            if grep -E "failed to build|Download failed|No more mirrors|Hash mismatch" download.log; then
-              echo "A source file could not be downloaded."; exit 1
+            ok=0
+            for attempt in 1 2 3; do
+              if make download -j4 > download.log 2>&1; then ok=1; break; fi
+              echo "download pass $attempt failed: $(grep -E "ERROR:|Hash mismatch" download.log | sort -u | tr "\n" " ")"
+              [ "$attempt" -lt 3 ] && sleep $((attempt * 30))
+            done
+            if [ "$ok" != 1 ]; then
+              echo "A source file could not be downloaded after 3 passes:"
+              grep -E "ERROR:|Hash mismatch|curl: \(" download.log | sort -u | tail -40
+              exit 1
             fi
             find dl -type f -size 0 -print | grep . && { echo "Empty download found."; exit 1; }
             echo "all sources present: $(ls dl | wc -l) files, $(du -sh dl | cut -f1)"
