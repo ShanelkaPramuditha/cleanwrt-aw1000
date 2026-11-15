@@ -1716,6 +1716,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#one-install-away" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One install away
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#core-and-system" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2259,6 +2270,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#one-install-away" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One install away
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#core-and-system" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2404,18 +2426,6 @@ switch.</p>
 <td>VPN client and server</td>
 </tr>
 <tr>
-<td>Tailscale</td>
-<td>Services → Tailscale</td>
-<td>needs your login</td>
-<td>mesh VPN</td>
-</tr>
-<tr>
-<td>Cloudflare Zero Trust Tunnel</td>
-<td>Services → Cloudflare Zero Trust Tunnel</td>
-<td>Off</td>
-<td>publish a service without a public IP</td>
-</tr>
-<tr>
 <td>Watchcat</td>
 <td>Tools → Watchcat</td>
 <td><strong>no rule at all</strong>, deliberately</td>
@@ -2444,18 +2454,6 @@ switch.</p>
 <td>Services → miniDLNA</td>
 <td>Off</td>
 <td>media server for TVs and players</td>
-</tr>
-<tr>
-<td>Syncthing</td>
-<td>Services → Syncthing</td>
-<td>Off</td>
-<td>folder sync with your phone and PC (<a href="../features/web-apps/">web apps</a>)</td>
-</tr>
-<tr>
-<td>qBittorrent</td>
-<td>Services → qBittorrent</td>
-<td>Off</td>
-<td>download client with its own web interface (<a href="../features/web-apps/">web apps</a>)</td>
 </tr>
 <tr>
 <td>File Manager</td>
@@ -2513,6 +2511,43 @@ switch.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="one-install-away">One install away<a class="headerlink" href="#one-install-away" title="Permanent link">&para;</a></h2>
+<p>Left out of the image to keep it small, and installed with one line when you want them. Each
+arrives switched off.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Install</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tailscale</td>
+<td><code>apk add tailscale luci-app-tailscale-community</code></td>
+<td>mesh VPN (<a href="../features/remote-access/">remote access</a>)</td>
+</tr>
+<tr>
+<td>Cloudflare Zero Trust Tunnel</td>
+<td><code>apk add cloudflared luci-app-cloudflared</code></td>
+<td>publish a service without a public IP (<a href="../features/remote-access/">remote access</a>)</td>
+</tr>
+<tr>
+<td>Syncthing</td>
+<td><code>apk add syncthing luci-app-syncthing</code></td>
+<td>folder sync with your phone and PC (<a href="../features/web-apps/">web apps</a>)</td>
+</tr>
+<tr>
+<td>qBittorrent</td>
+<td><code>apk add qbittorrent luci-app-qbittorrent</code></td>
+<td>download client with its own web interface (<a href="../features/web-apps/">web apps</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Run <code>apk update</code> first. Tailscale, Cloudflare and <code>syncthing</code> come from the official OpenWrt
+repositories; <code>luci-app-syncthing</code> and qBittorrent come from this project's signed <code>cw-opt</code> feed,
+which the image already lists (<a href="../extra-packages/">extra packages</a>).</p>
 <h2 id="core-and-system">Core and system<a class="headerlink" href="#core-and-system" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2561,8 +2596,8 @@ image's thirteen first-boot scripts, and both are listed in
 <a href="../reference/uci-defaults/">first-boot defaults</a>. The option values themselves are in
 <a href="../reference/options/">UCI options</a>.</p>
 <h2 id="need-something-else">Need something else?<a class="headerlink" href="#need-something-else" title="Permanent link">&para;</a></h2>
-<p>The official OpenWrt package repositories are enabled, so <code>apk add &lt;name&gt;</code> works (for example
-<code>apk add mwan3 luci-app-mwan3</code>). Packages you add yourself are yours to manage. See
+<p>The official OpenWrt package repositories and this project's <code>cw-opt</code> feed are enabled, so
+<code>apk add &lt;name&gt;</code> works (for example <code>apk add mwan3 luci-app-mwan3</code>). Packages you add yourself are yours to manage. See
 <a href="../extra-packages/">Extra packages</a>.</p>
 <h2 id="ipv6-and-proxies">IPv6 and proxies<a class="headerlink" href="#ipv6-and-proxies" title="Permanent link">&para;</a></h2>
 <p>The 5G connection is dual-stack when your carrier offers IPv6. If you send traffic through

@@ -2625,6 +2625,11 @@ upstream feeds at build time, every one pinned to a commit.</p>
 <td>by hand (<em>Actions → release → Run workflow</em>)</td>
 <td>publishes the draft release as it is. It builds nothing</td>
 </tr>
+<tr>
+<td><code>feed</code></td>
+<td>by hand (<em>Actions → feed → Run workflow</em>)</td>
+<td>builds and publishes the <code>cw-opt</code> package feed (qBittorrent, the Syncthing switch) to the site. Needed before the first image that lists the feed, then only when those packages or the OpenWrt base change (<a href="../extra-packages/#the-cleanwrt-feed-cw-opt">extra packages</a>)</td>
+</tr>
 </tbody>
 </table>
 <p>The inputs of a manual build:</p>
@@ -2638,27 +2643,15 @@ upstream feeds at build time, every one pinned to a commit.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>clean</code></td>
-<td>off</td>
-<td>rebuild every package</td>
-</tr>
-<tr>
-<td><code>opt_artifacts</code></td>
-<td>off</td>
-<td>also compile and verify the optional <code>cw-opt</code> feed</td>
-</tr>
-<tr>
-<td><code>artifacts</code></td>
-<td>off</td>
-<td>upload the images as a workflow artifact (public for a public repository)</td>
-</tr>
-<tr>
 <td><code>draft</code></td>
 <td>on</td>
-<td>put the images in the private draft release <code>v&lt;CW_VERSION&gt;</code>. Needs the signing secrets</td>
+<td>put the images in the private draft release <code>v&lt;CW_VERSION&gt;</code>. Needs the signing secrets and a live <code>cw-opt</code> feed. Untick it for a test build that publishes nothing</td>
 </tr>
 </tbody>
 </table>
+<p>That is the only choice. A clean rebuild is not offered because every run starts from a freshly
+cloned tree anyway; the feed is compiled by the <code>feed</code> workflow; and images are never uploaded as
+a workflow artifact, which anyone signed in to GitHub could download, while a draft stays private.</p>
 <p>A job is limited to six hours by GitHub. A cold build takes roughly two hours; later builds are
 shorter because of the caches.</p>
 <h3 id="releasing-build-once-publish-the-tested-files">Releasing: build once, publish the tested files<a class="headerlink" href="#releasing-build-once-publish-the-tested-files" title="Permanent link">&para;</a></h3>
@@ -2696,6 +2689,11 @@ the next release: a published release is never rewritten, and a build of a relea
 <td>that section becomes the release notes</td>
 </tr>
 <tr>
+<td>the <code>cw-opt</code> feed the image lists answers</td>
+<td>before the build</td>
+<td>a dead feed entry breaks <code>apk update</code> on every router: run the <code>feed</code> workflow first</td>
+</tr>
+<tr>
 <td>the version is not published yet, and no tag of it sits on another commit</td>
 <td>before the build</td>
 <td>a published release is never rewritten</td>
@@ -2703,7 +2701,7 @@ the next release: a published release is never rewritten, and a build of a relea
 <tr>
 <td>the package key is the one routers trust (<code>tools/cw-check-release-keys.sh</code>)</td>
 <td>inside the build</td>
-<td>the same check <code>opt_artifacts</code> runs</td>
+<td>the same check the <code>feed</code> workflow runs before it signs the feed</td>
 </tr>
 <tr>
 <td>the sysupgrade image carries a valid signature by the release key</td>
@@ -2791,7 +2789,7 @@ before, so nothing on the device changes.</p>
 <p>On GitHub Actions these keys come from the repository secrets <code>APK_PRIVATE_KEY</code>,
 <code>USIGN_KEY_BUILD</code> and <code>USIGN_KEY_BUILD_PUB</code>. A build that puts its images in the draft release
 refuses to start without them, so every release is signed. A local build without the keys makes
-unsigned images, and the <code>cw-opt</code> feed stays disabled.</p>
+unsigned images, and a feed built with a throw-away key that no router trusts.</p>
 <p>On OpenWrt 25.12 the buildroot no longer makes the certificate an image signature needs
 (<code>key-build.ucert</code>; it did so only for opkg builds), so <code>tools/cw-release-build.sh</code> makes it from the
 staged key (step 5b), and puts the public key in the image at <code>/etc/opkg/keys/</code>, where the router's

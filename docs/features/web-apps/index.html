@@ -2384,7 +2384,15 @@
 
 <h1 id="apps-with-their-own-web-interface">Apps with their own web interface<a class="headerlink" href="#apps-with-their-own-web-interface" title="Permanent link">&para;</a></h1>
 <p>Some apps are configured in their own dashboard, opened in the browser, and not inside LuCI. The
-two below are installed with the firmware. The examples assume the router is at <code>192.168.1.1</code>.</p>
+two below are <strong>not in the image</strong>, to keep it small: each is one install away. The examples assume
+the router is at <code>192.168.1.1</code>.</p>
+<div class="highlight"><pre><span></span><code>apk<span class="w"> </span>update
+apk<span class="w"> </span>add<span class="w"> </span>syncthing<span class="w"> </span>luci-app-syncthing<span class="w">          </span><span class="c1"># Syncthing, and its switch in LuCI</span>
+apk<span class="w"> </span>add<span class="w"> </span>qbittorrent<span class="w"> </span>luci-app-qbittorrent<span class="w">      </span><span class="c1"># qBittorrent with its LuCI page</span>
+</code></pre></div>
+<p><code>syncthing</code> comes from the official OpenWrt repositories. <code>luci-app-syncthing</code>, <code>qbittorrent</code> and
+<code>luci-app-qbittorrent</code> come from this project's own signed feed, <code>cw-opt</code>, which the image already
+lists (<a href="../../extra-packages/">extra packages</a>). Both apps arrive switched off.</p>
 <h2 id="start-and-stop-an-app">Start and stop an app<a class="headerlink" href="#start-and-stop-an-app" title="Permanent link">&para;</a></h2>
 <p>Every app has an <strong>Enable</strong> box on its LuCI page (<em>Services → the app's name</em>). Tick it and press
 <strong>Save &amp; Apply</strong> to start; untick it and press <strong>Save &amp; Apply</strong> to stop. One switch, the same
@@ -2426,13 +2434,13 @@ to <code>http://127.0.0.1:8384</code>.</p>
 <tbody>
 <tr>
 <td>Syncthing</td>
-<td><strong>off</strong></td>
+<td>not installed; <strong>off</strong> once installed</td>
 <td><code>http://0.0.0.0:8384</code></td>
 <td>a password. The interface binds all addresses as shipped</td>
 </tr>
 <tr>
 <td>qBittorrent</td>
-<td><strong>off</strong></td>
+<td>not installed; <strong>off</strong> once installed</td>
 <td>its own web UI</td>
 <td>the download directory. It defaults to the first USB drive</td>
 </tr>
@@ -2467,8 +2475,8 @@ to <code>http://127.0.0.1:8384</code>.</p>
 <h2 id="questions-people-ask">Questions people ask<a class="headerlink" href="#questions-people-ask" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>Which apps have their own web page on CleanWRT?</summary>
-<p>Syncthing and qBittorrent. Each is installed and switched off, and each listens on
-its own port only after you enable it.</p>
+<p>Syncthing and qBittorrent. Neither is in the image; each installs with one <code>apk add</code>, arrives
+switched off, and listens on its own port only after you enable it.</p>
 </details>
 
 

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in.">
+        <meta name="description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, a DLNA media server, and qBittorrent or Syncthing one install away, all opt-in.">
       
       
       
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="USB storage and NAS - CleanWRT">
-<meta property="og:description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in.">
+<meta property="og:description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, a DLNA media server, and qBittorrent or Syncthing one install away, all opt-in.">
 <meta property="og:url" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/features/storage/">
 <meta property="og:image" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,13 +64,13 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="USB storage and NAS - CleanWRT">
-<meta name="twitter:description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in.">
+<meta name="twitter:description" content="Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, a DLNA media server, and qBittorrent or Syncthing one install away, all opt-in.">
 <meta name="twitter:image" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Using CleanWRT"}, {"@type": "ListItem", "position": 3, "name": "USB storage and NAS", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/features/storage/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "USB storage and NAS", "description": "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, qBittorrent, Syncthing, a DLNA media server and a printer server, all opt-in.", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/features/storage/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I use a USB drive as a NAS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. A drive auto-mounts under /mnt (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them."}}, {"@type": "Question", "name": "Can the AW1000 stream media to a smart TV?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there."}}, {"@type": "Question", "name": "Why should I plug a drive in before downloading?", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. With no drive attached they would fill the router's small internal flash."}}, {"@type": "Question", "name": "Can I use a USB drive as a NAS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it is the only place this router has room. Samba serves /mnt as one writable share with guest access off, so it is private until you add users."}}, {"@type": "Question", "name": "Can the AW1000 stream media to a smart TV?", "acceptedAnswer": {"@type": "Answer", "text": "With miniDLNA switched on: port 8200 on the LAN bridge, scanning /mnt, announcing itself as CleanWRT."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "USB storage and NAS", "description": "Use a USB drive with the Arcadyan AW1000: auto-mount, Samba file sharing, a DLNA media server, and qBittorrent or Syncthing one install away, all opt-in.", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/features/storage/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}, "dateModified": "2026-11-06"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can I use a USB drive as a NAS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. A drive auto-mounts under /mnt (ext4, FAT, exFAT and NTFS), and you can share it with SMB and DLNA from the image, and with Syncthing and qBittorrent after one apk add each. All of them stay off until you enable them, so set credentials first."}}, {"@type": "Question", "name": "Can the AW1000 stream media to a smart TV?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Enable miniDLNA with a drive of media attached. Smart TVs, VLC, Kodi and phone apps on the LAN will see the server. A PlayStation 5 has no built-in DLNA player, so use an app such as Plex there."}}, {"@type": "Question", "name": "Why should I plug a drive in before downloading?", "acceptedAnswer": {"@type": "Answer", "text": "Downloads default to the first USB drive. With no drive attached they would fill the router's small internal flash."}}, {"@type": "Question", "name": "Can I use a USB drive as a NAS on the Arcadyan AW1000?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it is the only place this router has room. Samba serves /mnt as one writable share with guest access off, so it is private until you add users."}}, {"@type": "Question", "name": "Can the AW1000 stream media to a smart TV?", "acceptedAnswer": {"@type": "Answer", "text": "With miniDLNA switched on: port 8200 on the LAN bridge, scanning /mnt, announcing itself as CleanWRT."}}]}</script>
 </head>
   
   
@@ -2417,8 +2417,10 @@ FAT32, exFAT, NTFS, btrfs), and shows disk health (SMART, including USB-NVMe enc
 every reboot. The <code>smartd</code> daemon ships disabled; the UI only uses the <code>smartctl</code> command.</p>
 </div>
 <h2 id="nas-services-all-opt-in">NAS services (all opt-in)<a class="headerlink" href="#nas-services-all-opt-in" title="Permanent link">&para;</a></h2>
-<p>Everything below ships <strong>installed but disabled</strong> and is pointed at the USB drive. Nothing
-listens on the LAN until you enable it. <strong>Set credentials before you enable each service.</strong></p>
+<p>Everything below is pointed at the USB drive and stays off until you enable it; nothing listens
+on the LAN before that. qBittorrent and Syncthing are not in the image: install them first
+(<code>apk update &amp;&amp; apk add qbittorrent luci-app-qbittorrent</code> or <code>apk add syncthing luci-app-syncthing</code>,
+see <a href="../web-apps/">web apps</a>). <strong>Set credentials before you enable each service.</strong></p>
 <table>
 <thead>
 <tr>
@@ -2484,7 +2486,7 @@ it does not re-scan on every reboot.</p>
 <h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
 <details class="question">
 <summary>Can I use a USB drive as a NAS on the Arcadyan AW1000?</summary>
-<p>Yes. A drive auto-mounts under <code>/mnt</code> (ext4, FAT, exFAT and NTFS), and you can share it with SMB, DLNA, Syncthing and qBittorrent. All of these ship installed but disabled, so set credentials before you enable them.</p>
+<p>Yes. A drive auto-mounts under <code>/mnt</code> (ext4, FAT, exFAT and NTFS), and you can share it with SMB and DLNA from the image, and with Syncthing and qBittorrent after one <code>apk add</code> each. All of them stay off until you enable them, so set credentials first.</p>
 </details>
 <details class="question">
 <summary>Can the AW1000 stream media to a smart TV?</summary>
@@ -2521,12 +2523,12 @@ it does not re-scan on every reboot.</p>
 </tr>
 <tr>
 <td>Syncthing</td>
-<td><strong>off</strong></td>
-<td>when on, its own interface on <code>0.0.0.0:8384</code> and its config in <code>/etc/syncthing</code></td>
+<td><strong>not in the image</strong>; off once installed</td>
+<td>when on, its own interface on <code>0.0.0.0:8384</code> and its config in <code>/etc/syncthing</code> (the image ships that config, so an install keeps it)</td>
 </tr>
 <tr>
 <td>qBittorrent</td>
-<td><strong>off</strong></td>
+<td><strong>not in the image</strong>; off once installed</td>
 <td>downloads default to the first USB drive</td>
 </tr>
 <tr>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Install more packages on the Arcadyan AW1000 with apk from the official OpenWrt repositories, and how the optional CleanWRT feed works.">
+        <meta name="description" content="Install more packages on the Arcadyan AW1000 with apk, from the official OpenWrt repositories and the CleanWRT feed (qBittorrent, the Syncthing switch).">
       
       
       
@@ -56,7 +56,7 @@
   <meta property="og:type" content="article">
 <meta property="og:site_name" content="CleanWRT">
 <meta property="og:title" content="Extra packages - CleanWRT">
-<meta property="og:description" content="Install more packages on the Arcadyan AW1000 with apk from the official OpenWrt repositories, and how the optional CleanWRT feed works.">
+<meta property="og:description" content="Install more packages on the Arcadyan AW1000 with apk, from the official OpenWrt repositories and the CleanWRT feed (qBittorrent, the Syncthing switch).">
 <meta property="og:url" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/extra-packages/">
 <meta property="og:image" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta property="og:image:width" content="1200">
@@ -64,12 +64,12 @@
 <meta property="og:image:alt" content="CleanWRT, OpenWrt for the Arcadyan AW1000">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Extra packages - CleanWRT">
-<meta name="twitter:description" content="Install more packages on the Arcadyan AW1000 with apk from the official OpenWrt repositories, and how the optional CleanWRT feed works.">
+<meta name="twitter:description" content="Install more packages on the Arcadyan AW1000 with apk, from the official OpenWrt repositories and the CleanWRT feed (qBittorrent, the Syncthing switch).">
 <meta name="twitter:image" content="https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#14b8a6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "CleanWRT", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, {"@type": "ListItem", "position": 2, "name": "Packages"}, {"@type": "ListItem", "position": 3, "name": "Extra packages", "item": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/extra-packages/"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Extra packages", "description": "Install more packages on the Arcadyan AW1000 with apk from the official OpenWrt repositories, and how the optional CleanWRT feed works.", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/extra-packages/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Extra packages", "description": "Install more packages on the Arcadyan AW1000 with apk, from the official OpenWrt repositories and the CleanWRT feed (qBittorrent, the Syncthing switch).", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/extra-packages/", "image": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/assets/img/social.png", "inLanguage": "en", "isPartOf": {"@type": "WebSite", "name": "CleanWRT", "url": "https://shanelkapramuditha.github.io/cleanwrt-aw1000/docs/"}, "author": {"@type": "Person", "name": "Pr0Luci", "url": "https://github.com/Pr0Luci"}}</script>
 </head>
   
   
@@ -1783,24 +1783,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-optional-cleanwrt-feed-cw-opt" class="md-nav__link">
+  <a href="#the-cleanwrt-feed-cw-opt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The optional CleanWRT feed (cw-opt)
+        The CleanWRT feed (cw-opt)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CleanWRT feed (cw-opt)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-the-feed-is-made-for-the-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the feed is made (for the project)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-already-baked-in" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is already baked in
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2248,24 +2254,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-optional-cleanwrt-feed-cw-opt" class="md-nav__link">
+  <a href="#the-cleanwrt-feed-cw-opt" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The optional CleanWRT feed (cw-opt)
+        The CleanWRT feed (cw-opt)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The CleanWRT feed (cw-opt)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-the-feed-is-made-for-the-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the feed is made (for the project)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-already-baked-in" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is already baked in
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2303,24 +2315,46 @@ apk<span class="w"> </span>add<span class="w"> </span>&lt;package&gt;
 <p>Examples that are not part of the image: <code>mwan3</code> and <code>luci-app-mwan3</code> (multi-WAN),
 <code>transmission-daemon</code> (another download client), <code>aria2</code>, <code>luci-app-acme</code> (certificates).</p>
 <p>Packages you add yourself stay unpinned and are yours to manage.</p>
-<h2 id="the-optional-cleanwrt-feed-cw-opt">The optional CleanWRT feed (<code>cw-opt</code>)<a class="headerlink" href="#the-optional-cleanwrt-feed-cw-opt" title="Permanent link">&para;</a></h2>
-<p>CleanWRT can publish its own signed <code>apk</code> feed for packages the official repositories do not
-carry, such as the qBittorrent stack's dependencies. <strong>The feed is not active in the <code>25.12.5-R2.2-SP1</code> image</strong>: the repository
-holds a disabled template, <code>files/etc/apk/repositories.d/cw-opt.list.disabled</code>, and the feed is
-switched on only when its index is published and its signing key exists.</p>
-<p>How it is enabled (for the project, not for users):</p>
-<ol>
-<li>Build once so the tree creates its apk signing key.</li>
-<li>Copy the public half to <code>files/etc/apk/keys/public-key.pem</code>.</li>
-<li>Publish the index first. An image that carries a dead feed entry breaks <code>apk update</code> on every
-   device.</li>
-<li>Rename the file to <code>cw-opt.list</code> and rebuild.</li>
-</ol>
-<p>Until then, <code>apk update</code> talks to the official repositories only, and it works from the first
-boot.</p>
-<h2 id="what-is-already-baked-in">What is already baked in<a class="headerlink" href="#what-is-already-baked-in" title="Permanent link">&para;</a></h2>
-<p>qBittorrent is part of the image, with the Qt6 stack it needs. It comes from the project's
-vendored feed (<code>feeds-src/cwfeed</code>) and stays disabled until you enable it.</p>
+<h2 id="the-cleanwrt-feed-cw-opt">The CleanWRT feed (<code>cw-opt</code>)<a class="headerlink" href="#the-cleanwrt-feed-cw-opt" title="Permanent link">&para;</a></h2>
+<p>Every router also lists this project's own signed <code>apk</code> feed, for what the official repositories
+do not carry and the image leaves out to stay small:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qbittorrent</code>, <code>luci-app-qbittorrent</code></td>
+<td>the download client and its LuCI page, with the Qt6 libraries it needs</td>
+</tr>
+<tr>
+<td><code>luci-app-syncthing</code></td>
+<td>the on/off switch for Syncthing in LuCI (<code>syncthing</code> itself is in the official repositories)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>apk<span class="w"> </span>update
+apk<span class="w"> </span>add<span class="w"> </span>qbittorrent<span class="w"> </span>luci-app-qbittorrent
+</code></pre></div>
+<p>The feed lives at <code>https://shanelkapramuditha.github.io/cleanwrt-aw1000/feed/</code> and is listed in
+<code>/etc/apk/repositories.d/cw-opt.list</code>. Its index is signed with the project's key, which every
+image trusts (<code>/etc/apk/keys/public-key.pem</code>), so <code>apk</code> refuses a feed signed with anything else.
+The feed also carries the community packages the image is built from (QModem, 3ginfo-lite and
+the rest), at the versions this project patched and tested.</p>
+<h3 id="how-the-feed-is-made-for-the-project">How the feed is made (for the project)<a class="headerlink" href="#how-the-feed-is-made-for-the-project" title="Permanent link">&para;</a></h3>
+<p>The <code>feed</code> workflow (<em>Actions → feed → Run workflow</em>) builds the image together with the feed
+set, signs and verifies the index (<code>tools/cw-publish-feed.sh</code>: the signature against the shipped
+key, one version per package, and an install check against the official repositories), and
+publishes it to <code>feed/</code> on the site. Run it:</p>
+<ul>
+<li>once before the first image that lists the feed: the build workflow refuses to build a draft
+  while the feed does not answer, because a dead feed entry breaks <code>apk update</code> on every router;</li>
+<li>again when qBittorrent, the Syncthing switch or the OpenWrt base changes.</li>
+</ul>
+<p>A normal release does not need it, so the image build stays short.</p>
 
 
 
