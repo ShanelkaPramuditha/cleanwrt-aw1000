@@ -10,10 +10,11 @@ CleanWRT ships with **Footstrap** as its web interface. It is an ordinary LuCI t
 upstream as
 [`luci-theme-footstrap`](https://github.com/VizzleTF/luci-theme-footstrap) (Apache-2.0), pinned to
 one commit in `configs/local-packages.pin`
-like every other out-of-feed package here. **CleanWRT changes one line of it** -
-`patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` puts the CleanWRT
-logo on the login page where the theme otherwise prints the router's hostname - and nothing else: what
-you see is the theme as its own author publishes it, selected by
+like every other out-of-feed package here. **CleanWRT changes only its login page**, with two small
+patches: `patches/packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo.patch` puts the
+CleanWRT logo where the theme otherwise prints the router's hostname, and
+`0002-login-card-centred-in-the-viewport.patch` centres the login card on the screen. Everything else
+is the theme as its own author publishes it, selected by
 `files/etc/uci-defaults/96-cw-default-theme`
 on first boot.
 
@@ -132,8 +133,9 @@ there. `/www/luci-static/footstrap/bg` and `.../fonts` are symlinks into that di
     installed in the image precisely so that this is always possible.
 
 ??? question "Does CleanWRT patch the theme?"
-    One line, for branding: the login page shows the CleanWRT logo instead of the router's hostname.
-    Everything else is the upstream package at its pinned commit. The logo is this repository's own
+    Only the login page: it shows the CleanWRT logo instead of the router's hostname, and its card
+    is centred on the screen instead of sitting near the top. Everything else is the upstream
+    package at its pinned commit. The logo is this repository's own
     file (`files/www/luci-static/cw-branding/login-logo.png`), outside the theme's directory, so a
     theme update can neither overwrite it nor collide with the patch. The look a new router starts
     with is added by a first-boot script and two background files, not by a patch.

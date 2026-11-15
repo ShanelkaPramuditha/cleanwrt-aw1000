@@ -10,9 +10,10 @@ Images are published on the project's
 [GitHub Releases page](https://github.com/ShanelkaPramuditha/cleanwrt-aw1000/releases). Every release is
 built by the `build` workflow in the repository, from the sources pinned in the release tag.
 
-A tag `v<version>` builds the images into a **draft** release, where they can be checked first.
-The release is published by hand, and that publish is also what tells this site (and the update
-notice in LuCI) that the version exists.
+A build puts the signed images into a private **draft** release, where they are tested first. The
+`release` workflow then publishes exactly those files, without building again; GitHub creates the
+tag `v<version>` at that moment. Publishing a full release is also what tells this site (and the
+update notice in LuCI) that the version exists; a prerelease is not offered to routers.
 
 ## Versions
 

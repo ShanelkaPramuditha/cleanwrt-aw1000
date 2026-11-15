@@ -38,6 +38,11 @@ upstream's, unchanged.
 | 2026-11-14 | `files/etc/uci-defaults/95-cw-drop-removed-apps`, `docs/fork-maintenance.md` | added: cleanup of removed apps' configs; fork maintenance page |
 | 2026-11-14 | `.github/workflows/build.yml`, `mkdocs.yml`, `docs/` | modified: toolchain cache in CI; navigation and docs for the above |
 | 2026-11-14 | `site-root/googlebcb1cf5d06c7bf33.html`, `.github/workflows/docs.yml` | removed: upstream's Google Search Console verification token, also from the published site |
+| 2026-11-14 | `patches/packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport.patch`, `docs/theme.md`, `docs/building.md` | added: the login card is centred on the screen |
+| 2026-11-14 | `feeds.conf.default`, `tools/cw-release-build.sh`, `tools/cw-publish-feed.sh`, `files/etc/apk/repositories.d/`, `files/etc/uci-defaults/96-cw-apk-world-pin`, `.devcontainer/cw-dev.sh`, `docs/` | modified: the OpenClash feed and its opt-in build removed |
+| 2026-11-14 | `tools/cw-release-build.sh`, `configs/arcadyan_aw1000.seed` | modified: a missing or partly deleted OpenWrt tree stops the build at the start; dead build toggles of removed proxies dropped; out-of-date comments corrected |
+| 2026-11-15 | `tools/cw-release-build.sh`, `tools/cw-sign-keys.sh` | modified: the build makes `key-build.ucert` from the staged key, so images are signed again on OpenWrt 25.12, and puts the public key in `/etc/opkg/keys/` |
+| 2026-11-15 | `.github/workflows/build.yml`, `.github/workflows/release.yml`, `.github/workflows/docs.yml`, `docs/building.md`, `docs/releases.md`, `docs/faq.md`, `docs/changelog.md` | modified / added: build once, publish the tested files: builds put signed, verified images in a private draft with notes from the changelog; the new `release` workflow publishes that draft and starts the site update |
 | 2026-11-14 | `.github/workflows/build.yml` | modified: Go build cache (`tmp/go-build`) kept between CI runs |
 | 2026-11-14 | `.devcontainer/cw-dev.sh`, `.devcontainer/devcontainer.json` | modified: local builds skip the optional cw-opt feed set unless `CW_BUILD_OPT_ARTIFACTS=1` |
 | 2026-11-14 | `README.md`, `NOTICE.md` | modified: fork notice, change list, credits |

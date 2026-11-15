@@ -14,7 +14,8 @@ updated: 2026-11-06
 - **QModem is not free for commercial use.** Its licence adds a non-commercial clause. See
   [Licence and notices](licence.md).
 - **AWvoice is not for emergency calls.** See the safety notes on the [AWvoice](awvoice.md) page.
-- **Images are unsigned** unless the project's image-signing key is configured for the release.
+- **Release images are signed** with the project's key. The router checks the signature only when
+  the `ucert` package is installed, which the image does not do by default.
 - **The `cw-opt` package feed is not active yet.**
 - The modem's own firmware is separate and is not provided by this project.
 - **The phone line is on as installed**, because a phone that does not ring is the failure people

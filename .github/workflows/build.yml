@@ -262,10 +262,6 @@ jobs:
             /cleanwrt/tools/cw-publish-feed.sh /build --out /cleanwrt/feed-out
           tar -C feed-out -czf dist/cw-opt-feed.tar.gz .
 
-      # A pushed tag always makes a draft. A manual run makes what `release` asks for:
-      # draft (private until published by hand), prerelease, or release (marked latest).
-      # The tag v<CW_VERSION> is created on the built commit when it does not exist yet; a tag
-      # made with the workflow token starts no second run.
       # The draft is the holding area: private, kept until deleted, and what the release
       # workflow publishes. Each build of a version refreshes it; a published release is never
       # touched (the site and the routers' upgrade notice point at those bytes).

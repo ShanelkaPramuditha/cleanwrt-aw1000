@@ -71,7 +71,7 @@ The checks along the way:
 
 | Check | When | Why |
 |---|---|---|
-| the `USIGN_KEY_BUILD`, `USIGN_KEY_BUILD_PUB` and `APK_PRIVATE_KEY` secrets are set | before the build | an unsigned image is refused by the router's signature check, and a throw-away package key signs packages no router trusts |
+| the `USIGN_KEY_BUILD`, `USIGN_KEY_BUILD_PUB` and `APK_PRIVATE_KEY` secrets are set | before the build | a release image carries the project's signature, which a router with `ucert` installed verifies before it flashes, and a throw-away package key signs packages no router trusts |
 | `docs/changelog.md` has a `## <CW_VERSION>` section | before the build | that section becomes the release notes |
 | the version is not published yet, and no tag of it sits on another commit | before the build | a published release is never rewritten |
 | the package key is the one routers trust (`tools/cw-check-release-keys.sh`) | inside the build | the same check `opt_artifacts` runs |
@@ -138,8 +138,14 @@ package's own source date still sets its `SourceDateEpoch`, and rootfs timestamp
 before, so nothing on the device changes.
 
 On GitHub Actions these keys come from the repository secrets `APK_PRIVATE_KEY`,
-`USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. Without them the images are unsigned and the
-`cw-opt` feed stays disabled.
+`USIGN_KEY_BUILD` and `USIGN_KEY_BUILD_PUB`. A build that puts its images in the draft release
+refuses to start without them, so every release is signed. A local build without the keys makes
+unsigned images, and the `cw-opt` feed stays disabled.
+
+On OpenWrt 25.12 the buildroot no longer makes the certificate an image signature needs
+(`key-build.ucert`; it did so only for opkg builds), so `tools/cw-release-build.sh` makes it from the
+staged key (step 5b), and puts the public key in the image at `/etc/opkg/keys/`, where the router's
+signature check looks for it.
 
 ## What this build changes upstream { #what-this-build-changes-upstream }
 
@@ -187,6 +193,7 @@ than shipping a half-applied change.
 | patch | what it changes |
 |---|---|
 | `packages/luci-theme-footstrap/0001-login-page-carries-the-image-logo` | one line: the login page shows the CleanWRT logo where the theme prints the router's hostname. The image file lives outside the theme's own directory, so a theme update can neither overwrite it nor collide with the patch |
+| `packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport` | the login card sits in the middle of the screen instead of 7vh from the top; on a screen shorter than the card the page scrolls from the top as before |
 
 ## Changing a patch or moving a pin
 

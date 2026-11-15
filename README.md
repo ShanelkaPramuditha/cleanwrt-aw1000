@@ -189,6 +189,11 @@ package feed.
 | Leftover configs of the removed apps cleaned up on a keep-settings upgrade | `files/etc/uci-defaults/95-cw-drop-removed-apps` |
 | CI caches the host tools, the cross toolchain and Go's build cache between runs | `.github/workflows/build.yml` |
 | A page for maintaining the fork | `docs/fork-maintenance.md`, `mkdocs.yml` |
+| The login card is centred on the screen | `patches/packages/luci-theme-footstrap/0002-login-card-centred-in-the-viewport.patch` |
+| OpenClash no longer built for the optional feed (Nikki runs the same Clash profiles) | `feeds.conf.default`, `tools/`, `files/etc/`, `.devcontainer/cw-dev.sh`, `docs/` |
+| A missing or partly deleted OpenWrt tree stops the build in seconds instead of failing hours later | `tools/cw-release-build.sh` |
+| Images are signed again: on OpenWrt 25.12 the build makes the signing certificate itself | `tools/cw-release-build.sh`, `tools/cw-sign-keys.sh` |
+| Build once, publish the tested files: builds fill a private draft release (signature verified, notes from the changelog), and a separate `release` workflow publishes it without rebuilding | `.github/workflows/`, `docs/` |
 
 Everything else is upstream's work, unchanged. The fork offers these changes back upstream where
 they fit.
